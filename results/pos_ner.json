@@ -1,0 +1,122 @@
+{
+  "name": "pos_ner",
+  "fast_mode": false,
+  "dataset": "bbc",
+  "n_articles": 2089,
+  "n_tokens": 924743,
+  "n_entities": 83859,
+  "seconds": 84.0,
+  "pos_share_pct": {
+    "NOUN": {
+      "business": 20.8,
+      "entertainment": 17.0,
+      "politics": 18.0,
+      "sport": 14.2,
+      "tech": 21.1
+    },
+    "PUNCT": {
+      "business": 11.3,
+      "entertainment": 12.1,
+      "politics": 11.2,
+      "sport": 12.8,
+      "tech": 11.2
+    },
+    "VERB": {
+      "business": 10.4,
+      "entertainment": 9.7,
+      "politics": 11.3,
+      "sport": 9.8,
+      "tech": 11.0
+    },
+    "ADP": {
+      "business": 11.1,
+      "entertainment": 10.3,
+      "politics": 10.2,
+      "sport": 10.0,
+      "tech": 10.5
+    },
+    "PROPN": {
+      "business": 9.4,
+      "entertainment": 13.2,
+      "politics": 9.6,
+      "sport": 13.2,
+      "tech": 6.6
+    },
+    "DET": {
+      "business": 8.9,
+      "entertainment": 9.0,
+      "politics": 9.3,
+      "sport": 8.4,
+      "tech": 8.9
+    },
+    "ADJ": {
+      "business": 6.8,
+      "entertainment": 5.9,
+      "politics": 6.2,
+      "sport": 5.6,
+      "tech": 7.1
+    },
+    "AUX": {
+      "business": 5.3,
+      "entertainment": 5.5,
+      "politics": 6.9,
+      "sport": 6.3,
+      "tech": 6.5
+    },
+    "PRON": {
+      "business": 2.9,
+      "entertainment": 4.9,
+      "politics": 5.3,
+      "sport": 6.4,
+      "tech": 4.6
+    },
+    "ADV": {
+      "business": 2.8,
+      "entertainment": 2.8,
+      "politics": 2.9,
+      "sport": 3.4,
+      "tech": 3.6
+    },
+    "PART": {
+      "business": 3.0,
+      "entertainment": 2.8,
+      "politics": 3.4,
+      "sport": 3.1,
+      "tech": 2.8
+    }
+  },
+  "entity_label_counts": {
+    "PERSON": 19546,
+    "ORG": 17101,
+    "DATE": 12674,
+    "GPE": 11206,
+    "CARDINAL": 7673,
+    "NORP": 4282,
+    "MONEY": 2546,
+    "ORDINAL": 2260,
+    "PERCENT": 1810,
+    "LOC": 1036,
+    "TIME": 803,
+    "EVENT": 675,
+    "FAC": 641,
+    "WORK_OF_ART": 620,
+    "PRODUCT": 480,
+    "QUANTITY": 233,
+    "LAW": 180,
+    "LANGUAGE": 93
+  },
+  "nltk_spacy_pos_agreement": {
+    "fine_pct": 94.3,
+    "coarse_pct": 94.8,
+    "tokens": 229
+  },
+  "ner_hand_check": {
+    "sentences": 30,
+    "sentences_with_error": 16,
+    "predicted_entities": 85,
+    "wrong_entities": 28,
+    "missed_entities": 3,
+    "precision_exact": 0.671
+  },
+  "ner_hand_check_by": "AI assistant; to be reviewed by student"
+}
