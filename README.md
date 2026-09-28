@@ -1,20 +1,30 @@
 # NewsMind
 
-NLP-Based News Article Classification, Summarization, and Question Answering System.
+**NLP-Based News Article Classification, Summarization, and Question Answering System.**
 Semester VII NLP lab project, GLS University (course 2604734).
+
+NewsMind covers the whole syllabus in 12 notebooks: preprocessing → BoW/TF-IDF → n-gram LMs → POS/NER →
+Word2Vec/GloVe → BiLSTM → BERT/GPT-2 → syntax & semantics → summarization → QA chatbot → tweet sentiment →
+comparison. Everything the syllabus says to *implement* (TF-IDF, n-gram LM, TextRank/PageRank) is written
+from scratch in `src/`, unit-tested, and checked against the library version. A FastAPI service exposes the
+classifier, summarizers, NER and the chatbot.
 
 ## Setup
 
 ```bash
 uv venv --python 3.12 .venv && source .venv/bin/activate
-uv pip install -r requirements.txt
-python scripts/download_data.py            # datasets, NLTK, spaCy, GloVe, HF models (~4 GB), splits
-python scripts/download_data.py --skip-models   # lighter: no transformer weights
-pytest                                     # split tests
+uv pip install -r requirements.txt               # pinned; full lock in requirements-lock.txt
+python scripts/download_data.py                  # datasets, NLTK, spaCy, GloVe, HF models (~4 GB), splits
+python scripts/download_data.py --skip-models    # lighter: no transformer weights
+pytest                                           # 63 tests (API tests need the trained models)
 ```
 
-`NEWSMIND_FAST=1` shrinks AG/tweet splits to 500 rows per class for quick runs.
-Device is chosen automatically: CUDA > Apple MPS > CPU.
+- `NEWSMIND_FAST=1` shrinks the AG/tweet splits to 500 rows per class for quick runs. FAST results go to
+  `results/fast/` and never replace real numbers.
+- Device is chosen automatically: CUDA > Apple MPS > CPU (`src/utils.py:get_device`).
+- Run a notebook and store its outputs: `scripts/run_nb.sh notebooks/02_bow_tfidf.py`.
+- Order matters once: nb02 (saves the TF-IDF model), nb04 (entities), nb05 (Word2Vec) and nb07 (DistilBERT,
+  ~25 min on an M3 or use Colab) create files that later notebooks and the API use.
 
 ## Results (AG News test set)
 
@@ -31,15 +41,77 @@ Device is chosen automatically: CUDA > Apple MPS > CPU.
 Full tables: [docs/RESULTS.md](docs/RESULTS.md)
 <!-- RESULTS:END -->
 
+## REST API
+
+```bash
+uvicorn api.app:app            # start-up loads TF-IDF, DistilBERT, spaCy and NewsBot (~15 s)
+```
+
+Swagger UI (interactive docs, try every endpoint in the browser): **http://127.0.0.1:8000/docs**
+
+| Endpoint | Body | Notes |
+|---|---|---|
+| `GET /health` | – | loaded models, device |
+| `POST /classify` | `{"text", "model": "tfidf" \| "distilbert"}` | default `tfidf`; returns label, confidence, class probabilities, `truncated`, `latency_ms` |
+| `POST /summarize` | `{"text", "method": "textrank" \| "distilbart", "sentences"}` | default `textrank`; DistilBART is loaded on its first request |
+| `POST /entities` | `{"text"}` | spaCy entities with character offsets |
+| `POST /ask` | `{"question"}` | NewsBot: "summarize article N", "who is mentioned in article N", "what topic is …", or any factual question |
+
+Input rules: `text` must be 1–10,000 characters and not only whitespace; `model`/`method` must be one of the
+listed values. Anything else returns **HTTP 422** with the reason. DistilBERT reads at most 512 tokens and
+DistilBART 1,024; longer input is truncated and the response says `"truncated": true`.
+
+Real responses from a local run:
+
+```bash
+$ curl -s -X POST localhost:8000/classify -H 'Content-Type: application/json' \
+    -d '{"text": "Apple unveiled a faster iPod and new iMac computers at its annual conference."}'
+{"label":"Sci/Tech","confidence":0.9453,"probabilities":{"World":0.0158,"Sports":0.0125,"Business":0.0263,"Sci/Tech":0.9453},"model":"tfidf","truncated":false,"latency_ms":1.01}
+
+$ curl -s -X POST localhost:8000/classify -H 'Content-Type: application/json' \
+    -d '{"text": "Apple unveiled a faster iPod and new iMac computers at its annual conference.", "model": "distilbert"}'
+{"label":"Sci/Tech","confidence":0.9608,"probabilities":{"World":0.0044,"Sports":0.0013,"Business":0.0335,"Sci/Tech":0.9608},"model":"distilbert","truncated":false,"latency_ms":9.57}
+
+$ curl -s -X POST localhost:8000/summarize -H 'Content-Type: application/json' \
+    -d '{"text": "Oil prices rose sharply on Monday as traders worried about supplies. Opec said it would not raise output. The football team won the cup final. Analysts expect oil prices to stay high this winter.", "sentences": 2}'
+{"summary":"Oil prices rose sharply on Monday as traders worried about supplies. Analysts expect oil prices to stay high this winter.","method":"textrank","truncated":false,"latency_ms":1.75}
+
+$ curl -s -X POST localhost:8000/entities -H 'Content-Type: application/json' \
+    -d '{"text": "Gordon Brown will deliver the Budget in London on Wednesday."}'
+{"entities":[{"text":"Gordon Brown","label":"PERSON","start":0,"end":12},{"text":"Budget","label":"LOC","start":30,"end":36},{"text":"London","label":"GPE","start":40,"end":46},{"text":"Wednesday","label":"DATE","start":50,"end":59}],"latency_ms":4.41}
+
+$ curl -s -X POST localhost:8000/ask -H 'Content-Type: application/json' \
+    -d '{"question": "Which play did Uganda ban?"}'
+{"intent":"question","answer":"The Vagina Monologues","best_guess":"The Vagina Monologues","confidence":0.9325,"article_id":1276,"category":"entertainment","title":"Uganda bans Vagina Monologues","retrieved_article_ids":[1276,1276,1276],"latency_ms":55.83}
+
+$ curl -s -X POST localhost:8000/classify -H 'Content-Type: application/json' -d '{"text": ""}'
+{"detail":[{"type":"string_too_short","loc":["body","text"],"msg":"String should have at least 1 character","input":"","ctx":{"min_length":1}}]}   # HTTP 422
+```
+
+("Budget" as LOC is a real spaCy mistake, kept on purpose; see nb04's error analysis.)
+
 ## Layout
 
 ```
-src/        from-scratch modules + shared helpers (data.py, utils.py, ...)
-notebooks/  01-12, jupytext .py sources + executed .ipynb
-api/        FastAPI app
-tests/      pytest
-docs/       research_notes.md (verified versions, datasets, deviations), architecture, demo script
-data/       gitignored; recreated by scripts/download_data.py
+src/         data.py (splits, text repair) · utils.py (paths, seed, device, timer) · preprocess.py (clean)
+             tfidf.py · ngram.py · textrank.py  (from scratch)  · evaluate.py (metrics, results JSON) · qa.py (NewsBot)
+notebooks/   01–12: jupytext .py sources + executed .ipynb with stored outputs
+api/app.py   FastAPI service
+tests/       pytest: splits, preprocessing, TF-IDF, n-gram, TextRank, QA, API
+results/     metrics JSON written by the notebooks (the only source of numbers in the docs)
+docs/        research_notes.md · RESULTS.md (generated) · ARCHITECTURE.md · DEMO_SCRIPT.md · qa_pairs.json
+viva/        VIVA_QA.md: question bank
+report/      OUTLINE.md and figures/
+scripts/     download_data.py · run_nb.sh
+data/, models/   gitignored; recreated by scripts/download_data.py and the notebooks
 ```
 
-See `docs/research_notes.md` for dataset schemas, model sizes and deviations from the plan.
+## Data
+
+| Dataset | Use | Notes |
+|---|---|---|
+| AG News (`fancyzhx/ag_news`) | classification (nb02, 05, 06, 07, 12, API) | 30k stratified train rows, full 7,600 test set; HTML artefacts repaired |
+| BBC News + summaries (`gopalkalpande/bbc-news-summary`) | n-grams, NER, semantic search, summarization, QA | 2,089 articles after removing duplicates; replaces the lowercased `SetFit/bbc-news` |
+| TweetEval sentiment (`cardiffnlp/tweet_eval`) | social-media sentiment (nb11) | official splits; escaped emoji decoded |
+
+Why each choice was made and what was verified: [docs/research_notes.md](docs/research_notes.md).
