@@ -183,3 +183,20 @@ Note: the English stopword list now has **198** words (older tutorials say 179).
 - **Latency numbers are noisy on this machine.** DistilBERT batched inference measured 44.6 ms/doc in one
   run and 10.0 ms/doc in the next, same model and data, depending on memory pressure. Treat ms/doc as
   order-of-magnitude, and say so in nb12 and the viva.
+
+## 10. Found during Phase 3
+- **BBC HTML entities.** 22 articles contained entities like `Jos&#233;` (found when QA answered "EC President
+  Jos&#233"). `parse_bbc_article()` now calls `html.unescape`. All BBC notebooks (nb03, nb04, nb08, nb09,
+  nb10) were re-run afterwards; the numbers barely moved (e.g. trigram PPL 2891.8 → 2891.0, ROUGE identical).
+- **Reference summaries.** 96.1% of reference sentences are copied from the article, and they are not in
+  article order. TextRank reaches ROUGE-1 precision ~0.95. Hypothesis (not confirmed by the dataset card):
+  the references were produced by an extractive sentence-scoring method.
+- **DistilBART on MPS:** ~2.7 s per article (100 articles ≈ 5 min). 4 of 100 inputs exceeded 1,024 tokens.
+- **QA reader calibration.** In 5 of 7 end-to-end errors the correct article was retrieved, but the reader
+  preferred a span from a different passage. Start/end logits are not comparable across passages. The SQuAD
+  1.1 reader also gives >0.99 confidence to some answers for unanswerable questions, which caps what a
+  threshold can do.
+- **TweetEval emoticons:** 3.1% of train tweets but only 0.4% (44) of test tweets contain `:)`-style
+  emoticons. The small, significant TF-IDF gain from "emoji handling" is a training-side effect (verified on
+  test tweets with no emoji/emoticon: +0.0032 macro-F1, CI [+0.0007, +0.0054]).
+- **Test tweets with hashtags: 39.3%** (not ~19%, which was an early train-set estimate).
