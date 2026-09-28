@@ -32,11 +32,11 @@ export default function EntitiesPanel({ samples, facts }) {
   return (
     <div className="desk">
       <form className="sheet" onSubmit={run}>
-        <label htmlFor="ent-text" className="field-label">Text</label>
+        <label htmlFor="ent-text" className="field-label">The copy</label>
         <textarea id="ent-text" className="reading" rows={9} value={text} required
                   placeholder="Paste a few sentences that mention people, organisations and places."
                   onChange={(e) => setText(e.target.value)} />
-        <Samples label="Opening paragraphs" items={items} onPick={(a) => setText(a.text)} />
+        <Samples label="Or take an opening paragraph:" items={items} onPick={(a) => setText(a.text)} />
         <div className="controls">
           <RunButton busy={busy} busyText="Reading…">Find names and places</RunButton>
         </div>
@@ -47,14 +47,15 @@ export default function EntitiesPanel({ samples, facts }) {
         <AnimatePresence mode="wait">
           {!out ? (
             <motion.p key="empty" className="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              spaCy's small English model marks every name it finds.
+              spaCy's small English model marks every person, organisation, place, date and figure it finds.
               {facts && ` When we checked ${facts.ner_checked} of its entities in BBC text by hand, ${Math.round(facts.ner_precision * 100)}% were exactly right, so expect some mistakes.`}
             </motion.p>
           ) : (
             <motion.section key={out.latency_ms} className="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <p className="kicker">spaCy marked the copy</p>
               <Legend entities={out.entities} focus={focus} setFocus={setFocus} />
               <p className="reading annotated">{annotate(out, focus)}</p>
-              <p className="note">{out.entities.length} entities found in {ms(out.latency_ms)}. Click a colour to show one kind.</p>
+              <p className="note">{out.entities.length} names marked in {ms(out.latency_ms)}. Choose a kind in the key to show only that kind.</p>
             </motion.section>
           )}
         </AnimatePresence>

@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { api } from './api.js'
-import { Marker } from './components/ui.jsx'
 import ClassifyPanel from './components/ClassifyPanel.jsx'
 import SummarizePanel from './components/SummarizePanel.jsx'
 import EntitiesPanel from './components/EntitiesPanel.jsx'
 import AskPanel from './components/AskPanel.jsx'
 import ResultsPanel from './components/ResultsPanel.jsx'
 
-const TABS = [
+// Sections of the "magazine". Each one calls one API endpoint.
+const SECTIONS = [
   { id: 'topic', label: 'Topic' },
   { id: 'summary', label: 'Summary' },
-  { id: 'names', label: 'Names and places' },
+  { id: 'names', label: 'Names & places' },
   { id: 'ask', label: 'Ask the archive' },
-  { id: 'results', label: 'How good is it?' },
+  { id: 'results', label: 'The numbers' },
 ]
+const EASE = [0.65, 0, 0.35, 1]
 
 export default function App() {
   const [tab, setTab] = useState('topic')
@@ -29,51 +30,64 @@ export default function App() {
     api('/results').then(setResults).catch(() => {})
   }, [])
 
-  // Arrow keys move between tabs (standard tablist behaviour).
+  // Arrow keys move between sections (standard tablist behaviour).
   function onTabKey(e) {
-    const i = TABS.findIndex((t) => t.id === tab)
+    const i = SECTIONS.findIndex((t) => t.id === tab)
     const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0
     if (!step) return
-    const next = TABS[(i + step + TABS.length) % TABS.length].id
+    const next = SECTIONS[(i + step + SECTIONS.length) % SECTIONS.length].id
     setTab(next)
     document.getElementById(`tab-${next}`)?.focus()
   }
 
+  const facts = results?.facts
   const panels = {
     topic: <ClassifyPanel samples={samples} />,
-    summary: <SummarizePanel samples={samples} facts={results?.facts} />,
-    names: <EntitiesPanel samples={samples} facts={results?.facts} />,
-    ask: <AskPanel samples={samples} facts={results?.facts} />,
+    summary: <SummarizePanel samples={samples} facts={facts} />,
+    names: <EntitiesPanel samples={samples} facts={facts} />,
+    ask: <AskPanel samples={samples} facts={facts} />,
     results: <ResultsPanel results={results} />,
   }
 
   return (
     <div className="page">
+      {/* The one orchestrated moment: the double rule is drawn across, then the nameplate settles. */}
       <header className="masthead">
-        <div>
-          <h1 className="wordmark"><Marker delay={0.35} height="38%">NewsMind</Marker></h1>
-          <p className="tagline">Paste a news story and see what each model reads in it.</p>
+        <div className="folio">
+          <span>An NLP laboratory, Semester VII</span>
+          <Status health={health} />
         </div>
-        <Status health={health} />
+        <motion.div className="double-rule" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
+                    transition={{ duration: 1.1, ease: EASE }} />
+        <motion.h1 className="nameplate" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+                   transition={{ delay: 0.45, duration: 0.9, ease: EASE }}>
+          NewsMind
+        </motion.h1>
+        <motion.p className="deck" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9, duration: 0.8 }}>
+          Six language models read the news and mark up the copy, the way an editor would: what the story is
+          about, which sentences matter, who is named in it, and what it can answer.
+          {facts && ` Drawn from ${facts.n_articles.toLocaleString('en')} BBC stories and ${facts.ag_n_test.toLocaleString('en')} AG News headlines.`}
+        </motion.p>
       </header>
 
-      <nav className="tabs" role="tablist" aria-label="Tools" onKeyDown={onTabKey}>
-        {TABS.map((t) => (
-          <button key={t.id} id={`tab-${t.id}`} role="tab" aria-selected={tab === t.id} aria-controls={`panel-${t.id}`}
-                  tabIndex={tab === t.id ? 0 : -1} className={tab === t.id ? 'tab on' : 'tab'} onClick={() => setTab(t.id)}>
+      <nav className="sections" role="tablist" aria-label="Sections" onKeyDown={onTabKey}>
+        {SECTIONS.map((t) => (
+          <button key={t.id} id={`tab-${t.id}`} role="tab" aria-selected={tab === t.id}
+                  aria-controls={`panel-${t.id}`} tabIndex={tab === t.id ? 0 : -1}
+                  className={tab === t.id ? 'section on' : 'section'} onClick={() => setTab(t.id)}>
+            {t.label}
             {tab === t.id && (
-              <motion.span layoutId="tab-marker" className="tab-marker"
-                           transition={{ type: 'spring', stiffness: 420, damping: 34 }} />
+              <motion.span layoutId="section-rule" className="section-rule"
+                           transition={{ type: 'spring', stiffness: 420, damping: 36 }} />
             )}
-            <span className="tab-text">{t.label}</span>
           </button>
         ))}
       </nav>
 
-      {/* All five views stay mounted, so results and the chat survive switching tabs;
-          only the visible one is shown, with a short CSS entrance animation. */}
+      {/* All five sections stay mounted, so results and the interview survive switching;
+          only the visible one is shown, with a short CSS entrance. */}
       <main>
-        {TABS.map((t) => (
+        {SECTIONS.map((t) => (
           <div key={t.id} id={`panel-${t.id}`} role="tabpanel" aria-labelledby={`tab-${t.id}`}
                className="view" hidden={tab !== t.id}>
             {panels[t.id]}
@@ -81,9 +95,12 @@ export default function App() {
         ))}
       </main>
 
-      <footer className="footer">
-        NewsMind, Semester VII NLP lab project. Models: TF-IDF + logistic regression, DistilBERT, TextRank,
-        DistilBART, spaCy, DistilBERT-SQuAD. API documentation at <a href="/docs">/docs</a>.
+      <footer className="colophon">
+        <p>
+          <em>Colophon.</em> Set in Bodoni Moda and Newsreader. Models: TF-IDF with logistic regression and a
+          fine-tuned DistilBERT for topics, TextRank and DistilBART for summaries, spaCy for names, and a
+          DistilBERT reader trained on SQuAD for questions. The API is documented at <a href="/docs">/docs</a>.
+        </p>
       </footer>
     </div>
   )
@@ -92,15 +109,15 @@ export default function App() {
 function Status({ health }) {
   const state = health === null ? 'checking' : health ? 'ok' : 'down'
   const text = {
-    checking: 'Connecting to the API…',
-    ok: health && `API ready on ${health.device}`,
-    down: 'API not reachable. Run uvicorn api.app:app',
+    checking: 'Connecting to the models…',
+    ok: health && `Models loaded, running on ${health.device}`,
+    down: 'The API is not running. Start it with uvicorn api.app:app',
   }[state]
   return (
-    <p className={`status ${state}`} role="status">
-      <motion.span className="status-dot" animate={state === 'checking' ? { opacity: [1, 0.3, 1] } : { opacity: 1 }}
+    <span className={`status ${state}`} role="status">
+      <motion.span className="status-dot" animate={state === 'checking' ? { opacity: [1, 0.25, 1] } : { opacity: 1 }}
                    transition={state === 'checking' ? { repeat: Infinity, duration: 1.2 } : {}} />
       {text}
-    </p>
+    </span>
   )
 }

@@ -22,16 +22,22 @@ export async function api(path, body) {
   return data
 }
 
-// Colours shared by every view: one highlighter per topic and per entity family.
-export const TOPIC_COLOR = { World: 'var(--sky)', Sports: 'var(--mint)', Business: 'var(--yellow)', 'Sci/Tech': 'var(--pink)' }
+// Colours shared by every view: printed spot colours. `ink` for bars and pencil strokes,
+// `wash` for the tinted band behind marked words. Values live in styles.css (:root).
+export const TOPIC_COLOR = {
+  World: { ink: 'var(--ultramarine)', wash: 'var(--wash-ultramarine)' },
+  Sports: { ink: 'var(--viridian)', wash: 'var(--wash-viridian)' },
+  Business: { ink: 'var(--ochre)', wash: 'var(--wash-ochre)' },
+  'Sci/Tech': { ink: 'var(--madder)', wash: 'var(--wash-madder)' },
+}
 
 export const ENTITY_KIND = {
-  PERSON: ['person', 'var(--pink)'],
-  ORG: ['organisation', 'var(--sky)'],
-  GPE: ['place', 'var(--mint)'], LOC: ['place', 'var(--mint)'], FAC: ['place', 'var(--mint)'],
-  NORP: ['group', 'var(--lilac)'],
-  DATE: ['date or time', 'var(--yellow)'], TIME: ['date or time', 'var(--yellow)'],
-  MONEY: ['number', 'var(--apricot)'], PERCENT: ['number', 'var(--apricot)'], CARDINAL: ['number', 'var(--apricot)'],
-  QUANTITY: ['number', 'var(--apricot)'], ORDINAL: ['number', 'var(--apricot)'],
+  PERSON: ['person', 'var(--wash-madder)'],
+  ORG: ['organisation', 'var(--wash-ultramarine)'],
+  GPE: ['place', 'var(--wash-viridian)'], LOC: ['place', 'var(--wash-viridian)'], FAC: ['place', 'var(--wash-viridian)'],
+  NORP: ['group', 'var(--wash-slate)'],
+  DATE: ['date or time', 'var(--wash-ochre)'], TIME: ['date or time', 'var(--wash-ochre)'],
+  MONEY: ['number', 'var(--wash-plum)'], PERCENT: ['number', 'var(--wash-plum)'], CARDINAL: ['number', 'var(--wash-plum)'],
+  QUANTITY: ['number', 'var(--wash-plum)'], ORDINAL: ['number', 'var(--wash-plum)'],
 }
-export const entityKind = (label) => ENTITY_KIND[label] || ['other', 'var(--lilac)']
+export const entityKind = (label) => ENTITY_KIND[label] || ['other', 'var(--wash-slate)']

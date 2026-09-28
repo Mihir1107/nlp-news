@@ -26,7 +26,7 @@ that it answers `{"status":"ok", ...}`.
 | 1:40–2:30 | nb03: log-probability table, perplexity table | Without smoothing, one unseen pair such as *(taxes, next)* makes the probability 0. Bigram beats unigram, but trigram loses on test (64% of test trigrams are unseen) while its training perplexity keeps falling: sparsity. |
 | 2:30–3:10 | nb07: "bank" cosine table and the GPT-2 hallucination cell | BERT gives "bank" different vectors in money and river sentences; Word2Vec has one vector. GPT-2 says the 2004 literature Nobel went to Albert Einstein: fluent and false. |
 | 3:10–5:40 | The web app (live) | See the steps below. |
-| 5:40–6:30 | Web app "How good is it?" tab, then nb12's "every model gets wrong" table | DistilBERT is best, about 1.5 points over TF-IDF and significant, at ~40× the size. About half its errors are shared by all six models, often label noise: tennis labelled "World". |
+| 5:40–6:30 | Web app "The numbers" section, then nb12's "every model gets wrong" table | DistilBERT is best, about 1.5 points over TF-IDF and significant, at ~40× the size. About half its errors are shared by all six models, often label noise: tennis labelled "World". |
 | 6:30–7:00 | – | Limitations: small NER model, extractive-reference bias in ROUGE, the QA reader cannot abstain on some unanswerable questions, latency measured on a memory-starved laptop. |
 
 ## Web app steps (3:10–5:40)
@@ -34,16 +34,16 @@ that it answers `{"status":"ok", ...}`.
 1. **Topic.** Click the "Giddy Phelps…" headline, choose *Compare both*, then *Find the topic*. Both models
    say Sports; point at the probability bars and the latency difference (milliseconds vs tens or hundreds).
 2. **Summary.** The US budget article is preloaded. Click *Summarize*: TextRank marks the 3 sentences it keeps,
-   in rank order, and the line beside each sentence is its PageRank score. Say: "the graph is TF-IDF cosine
+   with its rank written in the margin, and the rule beside each sentence is its PageRank score. Say: "the graph is TF-IDF cosine
    similarity between sentences; PageRank is our own power iteration, tested against networkx."
    Optionally switch to DistilBART and show the generated summary, and read the warning under it.
-3. **Names and places.** Click *Children vote Shrek 2 best film*, then *Find names and places*. Click the
-   *organisation* legend entry: "Azkaban" and "Dominic Wood" show up as organisations. Real errors of the small
+3. **Names & places.** Click *Children vote Shrek 2 best film*, then *Find names and places*. Click
+   *organisation* in the key: "Azkaban" and "Dominic Wood" show up as organisations. Real errors of the small
    spaCy model, which matches our hand check in nb04.
-4. **Ask the archive.** Click these suggestions in order:
-   - *Which play did Uganda's authorities ban?* → answer marked in the source passage (open the source line).
+4. **Ask the archive.** Click these questions in the "From the question desk" column, in order:
+   - *Which play did Uganda's authorities ban?* → the answer as a pull quote; *Show the source passage* marks it in the text.
    - *summarize article 1744* → labelled **rule-based**: a regular expression, not the model.
-   - *Who won the 2018 FIFA World Cup?* → "I don't know"; the pink line on the bar is the tuned threshold.
+   - *Who won the 2018 FIFA World Cup?* → "I don't know"; the red tick on the confidence bar is the tuned threshold.
 5. Optional: type only spaces in the Topic box and submit → the API's 422 message appears under the button.
 
 ## If something breaks

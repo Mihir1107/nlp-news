@@ -216,3 +216,13 @@ Note: the English stopword list now has **198** words (older tutorials say 179).
   scrolling), keyboard tab navigation with arrow keys, visible focus ring, the 422 error path, the DistilBART
   lazy load (3.0 s including load), and no console errors other than the intended 422. Screenshots are in
   `report/figures/web_*.png`.
+
+## 12. Editorial redesign of the web app
+- Requested direction: an editorial, premium feel. The Claude Design connector (`designer` MCP) was not used:
+  it needs Chrome restarted in debug mode, which would have closed the user's open browser, so the redesign was
+  done directly. It can be revisited with the connector after running `designer setup`.
+- Concept: the models are the editors. Output is marked on the copy with a blue pencil (#2438A6) and tinted
+  washes of printed spot colours; TextRank ranks go in the margin; the QA view is a Q&A interview.
+- Type: Bodoni Moda (display, variable with optical sizes) and Newsreader (text); the sans-serif was removed.
+  `@fontsource-variable/bodoni-moda` 5.3.0 was downloaded as a tarball (SHA-1 matched the registry).
+- Checked in Chromium at 1360×900 and 390×844 (no horizontal overflow); screenshots in `report/figures/web_*.png`.

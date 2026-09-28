@@ -64,19 +64,20 @@ The built web app is mounted at `/` *after* all API routes, so it can never shad
 
 ## 3. The web app (`frontend/`)
 
-One page with five views, each calling one endpoint. Every model result is drawn onto the text itself with
-an animated highlighter mark (`components/ui.jsx:Marker`, a background gradient whose width grows 0 → 100%).
+One page, laid out like a magazine, with five sections, each calling one endpoint. The models are treated as
+editors: their output is marked on the copy with a tinted wash or a blue-pencil underline
+(`components/ui.jsx:Marker`, a background gradient whose width grows 0 → 100%, so the mark is drawn in).
 
 | View | Endpoint | What it shows |
 |---|---|---|
-| Topic | `POST /classify` | label, class probabilities as animated bars; "Compare both" runs TF-IDF and DistilBERT side by side |
-| Summary | `POST /summarize` | TextRank: the whole article, kept sentences marked in rank order, PageRank score per sentence. DistilBART: generated text revealed word by word |
-| Names and places | `POST /entities` | entities marked in the text by kind; the legend filters one kind |
-| Ask the archive | `POST /ask` | chat; answer marked inside its source passage; confidence bar with the tuned "I don't know" threshold |
-| How good is it? | `GET /results` | dot plot of classifier accuracy, bars for ROUGE, QA and tweet results, all read from `results/*.json` |
+| Topic | `POST /classify` | the label set as a headline, class probabilities as hairline tallies; "Compare both" runs TF-IDF and DistilBERT side by side |
+| Summary | `POST /summarize` | TextRank: the whole article, kept sentences marked with their rank in the margin, PageRank score per sentence. DistilBART: generated text with a drop cap, revealed word by word |
+| Names & places | `POST /entities` | entities marked on the copy in a tint per kind; the key filters one kind |
+| Ask the archive | `POST /ask` | a Q&A interview; answer as a pull quote and marked inside its quoted source passage; confidence bar with the tuned "I don't know" threshold |
+| The numbers | `GET /results` | dot plot of classifier accuracy, bars for ROUGE, QA and tweet results, all read from `results/*.json` |
 
-Build: `esbuild` bundles `src/main.jsx` (JSX, CSS, fonts) into `dist/` (`frontend/build.mjs`). Fonts are bundled,
-so the app needs no internet. Motion respects the operating system's "reduce motion" setting.
+Build: `esbuild` bundles `src/main.jsx` (JSX, CSS, fonts) into `dist/` (`frontend/build.mjs`). Type: Bodoni Moda
+for display, Newsreader for text; both are bundled, so the app needs no internet. Motion respects the operating system's "reduce motion" setting.
 
 ## 4. Modules
 

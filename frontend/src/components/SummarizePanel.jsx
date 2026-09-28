@@ -39,11 +39,11 @@ export default function SummarizePanel({ samples, facts }) {
   return (
     <div className="desk">
       <form className="sheet" onSubmit={run}>
-        <label htmlFor="sum-text" className="field-label">Article</label>
+        <label htmlFor="sum-text" className="field-label">The article</label>
         <textarea id="sum-text" className="reading" rows={10} value={text} required
                   placeholder="Paste a news article of a few paragraphs."
                   onChange={(e) => setText(e.target.value)} />
-        <Samples label="BBC articles" items={articles} onPick={(a) => { setText(a.text); setOut(null) }} />
+        <Samples label="Or open a story from the BBC archive:" items={articles} onPick={(a) => { setText(a.text); setOut(null) }} />
         <div className="controls">
           <Segmented id="sum" label="Method" options={METHODS} value={method} onChange={setMethod} />
           {method === 'textrank' && (
@@ -63,8 +63,8 @@ export default function SummarizePanel({ samples, facts }) {
         <AnimatePresence mode="wait">
           {!out ? (
             <motion.p key="empty" className="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              TextRank marks the sentences it would keep and shows why: each sentence's PageRank score in a
-              graph of sentence similarities. DistilBART writes its own summary.
+              TextRank reads the article as a web of similar sentences and keeps the ones the rest point to,
+              marking its choices on the copy. DistilBART writes a summary of its own.
             </motion.p>
           ) : out.method === 'textrank' ? (
             <TextRankView key={`tr-${out.latency_ms}`} out={out} />
@@ -83,23 +83,31 @@ function TextRankView({ out }) {
   const order = [...out.selected].sort((a, b) => out.scores[b] - out.scores[a])
   return (
     <motion.section className="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <p className="result-model">TextRank kept {out.selected.length} of {out.sentences.length} sentences in {ms(out.latency_ms)}</p>
+      <p className="kicker">TextRank kept {out.selected.length} of {out.sentences.length} sentences, in {ms(out.latency_ms)}</p>
       <ol className="ranked-text">
         {out.sentences.map((s, i) => {
           const picked = out.selected.includes(i)
+          const rank = order.indexOf(i)          // 0 = highest PageRank score
           return (
             <li key={i} className={picked ? 'picked' : 'dropped'}>
+              {/* margin numeral: the sentence's rank, written in like an editor's note */}
+              <motion.span className="rank" aria-label={picked ? `rank ${rank + 1}` : undefined}
+                           initial={{ opacity: 0, x: -6 }} animate={{ opacity: picked ? 1 : 0, x: 0 }}
+                           transition={{ delay: 0.25 + rank * 0.35, duration: 0.4 }}>
+                {picked ? rank + 1 : ''}
+              </motion.span>
               <span className="sentence">
-                {picked ? <Marker delay={0.15 + order.indexOf(i) * 0.35}>{s}</Marker> : s}
+                {picked ? <Marker delay={0.2 + rank * 0.35}>{s}</Marker> : s}
               </span>
               <span className="score" title={`PageRank score ${out.scores[i]}`}>
-                <Meter value={out.scores[i] / max} height={4} color={picked ? 'var(--ink)' : 'var(--rule)'} delay={i * 0.02} />
+                <Meter value={out.scores[i] / max} height={2} color={picked ? 'var(--pencil)' : 'var(--rule)'} delay={i * 0.02} />
               </span>
             </li>
           )
         })}
       </ol>
-      <p className="note">Line under each sentence: its PageRank score relative to the best one.</p>
+      <p className="note">Numbers in the margin: the kept sentences in order of importance. The rule beside each
+        sentence is its PageRank score relative to the best one.</p>
     </motion.section>
   )
 }
@@ -108,8 +116,8 @@ function BartView({ out, facts }) {
   const words = out.summary.split(' ')
   return (
     <motion.section className="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <p className="result-model">DistilBART wrote this in {ms(out.latency_ms)}</p>
-      <p className="generated">
+      <p className="kicker">DistilBART wrote this summary, in {ms(out.latency_ms)}</p>
+      <p className="generated dropcap">
         {words.map((w, i) => (
           <motion.span key={i} initial={{ opacity: 0, y: 6, filter: 'blur(3px)' }}
                        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}

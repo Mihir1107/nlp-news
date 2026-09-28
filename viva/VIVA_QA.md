@@ -280,7 +280,7 @@ instead of ROUGE only.
 
 **56. How does the web app talk to the models?**
 It is a static page (React) served by FastAPI at `/`. Each view calls one endpoint with `fetch` and JSON
-(`frontend/src/api.js`): Topic → `POST /classify`, Summary → `POST /summarize`, Names and places →
+(`frontend/src/api.js`): Topic → `POST /classify`, Summary → `POST /summarize`, Names & places →
 `POST /entities`, Ask → `POST /ask`, results → `GET /results`. No model runs in the browser.
 
 **57. Why build it with React and esbuild, and why are the fonts bundled?**
@@ -293,9 +293,10 @@ files into `frontend/dist/` in one step (`build.mjs`). Bundled fonts mean the de
 (`src/textrank.py:textrank_rank`). The page shows the whole article, marks the kept sentences in rank order
 and draws a line for each sentence's score relative to the best one.
 
-**59. How does the "highlighter" animation work?**
+**59. How do the marks on the copy work?**
 `components/ui.jsx:Marker` is a `<mark>` whose background is a solid gradient; Framer Motion animates its
-`background-size` width from 0% to 100%, so the colour sweeps left to right. `box-decoration-break: clone`
+`background-size` width from 0% to 100%, so the mark is drawn left to right. The "wash" variant is a tinted band
+behind the words; the "pencil" variant is a 0.09em-high band at the baseline, which looks like an underline. `box-decoration-break: clone`
 gives each wrapped line its own stroke. With the OS "reduce motion" setting on, the mark appears instantly.
 
 **60. Are the numbers on the results page typed into the frontend?**

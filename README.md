@@ -8,7 +8,8 @@ Word2Vec/GloVe → BiLSTM → BERT/GPT-2 → syntax & semantics → summarizatio
 comparison. Everything the syllabus says to *implement* (TF-IDF, n-gram LM, TextRank/PageRank) is written
 from scratch in `src/`, unit-tested, and checked against the library version. A FastAPI service exposes the
 classifier, summarizers, NER and the chatbot, and serves a web app that draws every model result onto the text
-with an animated highlighter.
+laid out like a magazine: the models mark up the copy the way an editor would, with a blue pencil,
+tinted washes and notes in the margin.
 
 ![NewsMind web app: TextRank marks the sentences it keeps](report/figures/web_summary_textrank.png)
 
@@ -56,14 +57,14 @@ Open **http://127.0.0.1:8000/**. If port 8000 is taken by another program, add `
 
 | View | What you see |
 |---|---|
-| Topic | TF-IDF and/or DistilBERT label with animated probability bars; "Compare both" puts them side by side |
-| Summary | TextRank marks the sentences it keeps, in rank order, with each sentence's PageRank score; DistilBART's summary appears word by word |
-| Names and places | spaCy entities marked in the text by kind; click a legend colour to show one kind |
-| Ask the archive | chat with NewsBot; answers are marked inside their source passage, with the confidence threshold on the bar |
-| How good is it? | the evaluation numbers, read live from `results/*.json` |
+| Topic | TF-IDF and/or DistilBERT's verdict set as a headline, with the class probabilities as hairline tallies; "Compare both" sets them side by side |
+| Summary | TextRank marks the sentences it keeps, with their rank written in the margin and each sentence's PageRank score beside it; DistilBART's summary opens with a drop cap and appears word by word |
+| Names & places | spaCy entities marked on the copy in a tint per kind; choose a kind in the key to show only that kind |
+| Ask the archive | a Q&A interview with NewsBot: the answer set as a pull quote, the source passage quoted with the answer marked, the confidence threshold on the bar; suggested questions in the side column |
+| The numbers | the evaluation figures, read live from `results/*.json` |
 
 The app is React 19 + Framer Motion, bundled by esbuild (`frontend/build.mjs`) into `frontend/dist/`, which
-FastAPI serves. Fonts (Newsreader, Bricolage Grotesque) are bundled, so it works offline. Motion follows the
+FastAPI serves. Type is Bodoni Moda (display) and Newsreader (text); both are bundled, so it works offline. Motion follows the
 operating system's "reduce motion" setting. While editing the frontend, `npm run watch` rebuilds on every save.
 Screenshots: `report/figures/web_*.png`.
 

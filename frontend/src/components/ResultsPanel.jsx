@@ -15,6 +15,10 @@ export default function ResultsPanel({ results }) {
 
   return (
     <div className="results">
+      <p className="standfirst wide">
+        How well each model did on held-out data it never saw in training. Every figure on this page is read
+        from the project's results files, written by the twelve notebooks.
+      </p>
       <section className="figure wide">
         <h2>Topic classification on {results.facts.ag_n_test.toLocaleString('en')} AG News test stories</h2>
         <p className="caption">Accuracy of each model; the axis runs from {pct(lo)} to {pct(hi)} so the gaps are visible.</p>
@@ -60,7 +64,7 @@ export default function ResultsPanel({ results }) {
       <section className="figure">
         <h2>Tweet sentiment on {results.facts.tweets_n_test.toLocaleString('en')} test tweets</h2>
         <p className="caption">Macro-recall, the benchmark's official score. RoBERTa was trained on tweets by the benchmark's authors, so it is a reference ceiling, not a fair rival.</p>
-        <Bars rows={results.tweets.map((r) => [r.model.replace(' (reference, not fair)', ''), r['macro-recall'], r.model.includes('reference')])} />
+        <Bars rows={results.tweets.map((r) => [r.model.replace(' (reference, not fair)', ' (reference)'), r['macro-recall'], r.model.includes('reference')])} />
       </section>
     </div>
   )
@@ -72,7 +76,7 @@ function Bars({ rows }) {
       {rows.map(([label, v, reference], i) => (
         <li key={label} className={reference ? 'reference' : ''}>
           <span className="bar-label">{label}</span>
-          <Meter value={v} delay={0.15 + i * 0.08} color={reference ? 'var(--rule)' : 'var(--ink)'} />
+          <Meter value={v} delay={0.15 + i * 0.08} color={reference ? 'var(--rule)' : 'var(--pencil)'} />
           <span className="bar-value">{v.toFixed(3)}</span>
         </li>
       ))}
