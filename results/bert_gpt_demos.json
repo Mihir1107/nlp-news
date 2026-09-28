@@ -1,0 +1,115 @@
+{
+  "name": "bert_gpt_demos",
+  "fast_mode": false,
+  "fill_mask": {
+    "He went to the [MASK] to withdraw some money.": "bank (0.95), store (0.00), office (0.00), banks (0.00), atm (0.00)",
+    "He went to the [MASK] to catch some fish.": "lake (0.29), river (0.21), pond (0.17), creek (0.04), stream (0.03)",
+    "The central bank raised interest [MASK] to fight inflation.": "rates (0.92), rate (0.01), money (0.01), payments (0.01), fees (0.00)",
+    "The [MASK] scored twice in the final ten minutes.": "team (0.10), visitors (0.03), germans (0.03), lions (0.02), scots (0.02)",
+    "The [MASK] approved the new budget after a long debate.": "senate (0.22), legislature (0.20), voters (0.12), assembly (0.11), council (0.08)",
+    "Apple released a new [MASK] with a faster chip.": "version (0.53), model (0.10), variant (0.03), product (0.02), edition (0.02)"
+  },
+  "gpt2": [
+    {
+      "lead": "The Prime Minister announced on Tuesday that",
+      "setting": "greedy",
+      "continuation": " the government would not be able to provide a new tax on the sale of alcohol in the country.  The government has been trying to get the excise duty on alcohol to be reduced by 50 per"
+    },
+    {
+      "lead": "The Prime Minister announced on Tuesday that",
+      "setting": "top-k 50, T=1.0",
+      "continuation": " Russia would supply a $1tn (\u00a3750bn) defence industry project to Ukraine and would supply $50bn for a Ukrainian navy. It agreed to help form its own defense industry.   In"
+    },
+    {
+      "lead": "The Prime Minister announced on Tuesday that",
+      "setting": "top-p 0.9, T=0.7",
+      "continuation": " he would seek a referendum on whether to introduce a law to legalize same-sex marriage.  \"I am not interested in this referendum,\" he told reporters.  He also said he would"
+    },
+    {
+      "lead": "The Prime Minister announced on Tuesday that",
+      "setting": "top-p 0.9, T=1.3",
+      "continuation": " Russia would investigate a newly commissioned British operating vessel sailed by Israel-based Gearase Inmsford while it employed fuel filtration requirements inside ACM Thomas Cook, Salerno and Dalmatian Alexandria"
+    },
+    {
+      "lead": "Shares in the mobile phone maker fell sharply after the company",
+      "setting": "greedy",
+      "continuation": "'s stock fell more than 20 percent in after-hours trading.  The company's shares fell more than 20 percent in after-hours trading after the company's stock fell more than 20 percent in"
+    },
+    {
+      "lead": "Shares in the mobile phone maker fell sharply after the company",
+      "setting": "top-k 50, T=1.0",
+      "continuation": " announced it was halting plans to sell its popular iPhone app, which lets users order and pay bills while it's on the road.  Apple's stock price fell more than half a point after the"
+    },
+    {
+      "lead": "Shares in the mobile phone maker fell sharply after the company",
+      "setting": "top-p 0.9, T=0.7",
+      "continuation": " announced it was halting plans to sell its popular iPhone app, which it had bought for $1 billion.  The Apple Watch was created in 2011 to replace the Apple Watch, which is worn by"
+    },
+    {
+      "lead": "Shares in the mobile phone maker fell sharply after the company",
+      "setting": "top-p 0.9, T=1.3",
+      "continuation": " announced customers could choose 3G in 2019. Depending on service industry moves like those of Sprint we can expect an Ultra HD radio player comparable to AC-2 and AWS Salaries will rise 50 percent!"
+    },
+    {
+      "lead": "The England football manager said the team",
+      "setting": "greedy",
+      "continuation": " were \"very pleased\" with the performance of the players.  \"We are very pleased with the performance of the players,\" he said.  \"We are very pleased with the performance of"
+    },
+    {
+      "lead": "The England football manager said the team",
+      "setting": "top-k 50, T=1.0",
+      "continuation": "'s fans could not be happier with their team's winning record.  \"Of course we would love to get a trophy but this is not about an American football team and we are not doing it"
+    },
+    {
+      "lead": "The England football manager said the team",
+      "setting": "top-p 0.9, T=0.7",
+      "continuation": "'s season was a success.  \"It was a great season and we're looking forward to it. We've got the right players in all positions and we're looking forward to our Premier League"
+    },
+    {
+      "lead": "The England football manager said the team",
+      "setting": "top-p 0.9, T=1.3",
+      "continuation": "'s fairy tales was caused at least in part by failed injections of crucial dosages and would not help. \"How do I give this club AC \u2013 possibly subsidies, you know \u2013 that extra go \u2013"
+    }
+  ],
+  "hallucination": {
+    "prompt": "The 2004 Nobel Prize in Literature was awarded to",
+    "output": " the late Nobel Prize-winning physicist and Nobel laureate, Albert Einstein.  The Nobel Prize in Physics was awarded to the late Nobel Prize-winning physicist and Nobel laureate, Albert Einstein.  ",
+    "true_answer": "Elfriede Jelinek"
+  },
+  "bank_bert_cosine": {
+    "money-1": {
+      "money-1": 1.0,
+      "money-2": 0.812,
+      "river-1": 0.476,
+      "river-2": 0.514
+    },
+    "money-2": {
+      "money-1": 0.812,
+      "money-2": 1.0,
+      "river-1": 0.395,
+      "river-2": 0.483
+    },
+    "river-1": {
+      "money-1": 0.476,
+      "money-2": 0.395,
+      "river-1": 1.0,
+      "river-2": 0.815
+    },
+    "river-2": {
+      "money-1": 0.514,
+      "money-2": 0.483,
+      "river-1": 0.815,
+      "river-2": 1.0
+    }
+  },
+  "bank_w2v_neighbours": [
+    "banco",
+    "hispano",
+    "santander",
+    "toronto-dominion",
+    "td.to",
+    "postbank",
+    "deutsche",
+    "4,500"
+  ]
+}
