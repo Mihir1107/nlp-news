@@ -41,7 +41,7 @@ def test_ag_disjoint_and_nested(s):
 
 
 def test_ag_text_repaired(s):
-    for bad in ["#39;", "quot;", "&lt;", "\\"]:
+    for bad in ["#39;", "quot;", "&lt;", "hellip;", "nbsp;", "\\"]:
         assert not s["ag_train"]["text"].str.contains(bad, regex=False).any(), bad
 
 
@@ -81,6 +81,7 @@ def test_repair_examples():
     assert repair_ag_text("the Web #39;s No. 1") == "the Web's No. 1"
     assert repair_ag_text("AT amp;T costs #36;10") == "AT&T costs $10"
     assert repair_ag_text("&lt;b&gt;Hi&lt;/b&gt; there\\again") == "Hi there again"
+    assert repair_ag_text("laptops hellip;. and more") == "laptops \u2026. and more"
     assert parse_bbc_article("Big win..It rained.Then sun...Next day") == \
         ("Big win", "It rained. Then sun. Next day")
     assert fix_glued_sentences("U.S. firm") == "U.S. firm"   # abbreviations untouched

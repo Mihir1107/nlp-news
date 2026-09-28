@@ -34,6 +34,8 @@ def repair_ag_text(text: str) -> str:
     text = re.sub(r"#(\d+);", lambda m: chr(int(m[1])), text)  # "#36;10" -> "$10"
     text = re.sub(r"(\w) amp;(\w)", r"\1&\2", text)    # "AT amp;T" -> "AT&T"
     text = text.replace("amp;", "&").replace("quot;", '"')
+    text = re.sub(r"(?<![&\w])(hellip|nbsp|rsquo|lsquo|mdash|ndash|lt|gt);",  # bare "hellip;"
+                  lambda m: html.unescape(f"&{m[1]};"), text)
     text = html.unescape(text)                         # "&lt;b&gt;" -> "<b>"
     text = re.sub(r"<[^>]+>", " ", text)               # drop HTML tags
     return re.sub(r"\s+", " ", text).strip()

@@ -3,21 +3,21 @@
   "fast_mode": false,
   "dataset": "ag_train",
   "n_docs": 30000,
-  "seconds": 19.8,
+  "seconds": 20.4,
   "vocab_by_step": {
-    "raw (split on spaces)": 87223,
-    "+ lowercase + NLTK tokenize": 47647,
-    "+ remove punctuation": 47613,
-    "+ remove stop words": 47477,
-    "+ lemmatize (WordNet+POS)": 41297,
-    "(alt) + Porter stem instead": 35767
+    "raw (split on spaces)": 87199,
+    "+ lowercase + NLTK tokenize": 47644,
+    "+ remove punctuation": 47608,
+    "+ remove stop words": 47472,
+    "+ lemmatize (WordNet+POS)": 41292,
+    "(alt) + Porter stem instead": 35762
   },
   "tokens_by_step": {
-    "raw (split on spaces)": 1126242,
-    "+ lowercase + NLTK tokenize": 1252246,
-    "+ remove punctuation": 1126811,
-    "+ remove stop words": 765077,
-    "+ lemmatize (WordNet+POS)": 765077,
-    "(alt) + Porter stem instead": 765077
+    "raw (split on spaces)": 1126239,
+    "+ lowercase + NLTK tokenize": 1252150,
+    "+ remove punctuation": 1126743,
+    "+ remove stop words": 765009,
+    "+ lemmatize (WordNet+POS)": 765009,
+    "(alt) + Porter stem instead": 765009
   }
 }
