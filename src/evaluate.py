@@ -64,9 +64,10 @@ def _to_builtin(x):
 
 
 def save_results(name: str, data: dict):
-    """Write results/<name>.json. `fast_mode` is recorded so FAST runs are never reported."""
-    RESULTS.mkdir(exist_ok=True)
-    path = RESULTS / f"{name}.json"
+    """Write results/<name>.json. FAST runs go to results/fast/ so they never replace real numbers."""
+    folder = RESULTS / "fast" if FAST else RESULTS
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / f"{name}.json"
     with open(path, "w") as f:
         json.dump({"name": name, "fast_mode": FAST, **data}, f, indent=2, default=_to_builtin)
     print(f"saved {path.relative_to(RESULTS.parent)}")

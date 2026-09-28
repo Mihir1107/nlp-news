@@ -64,9 +64,9 @@ print(f"{len(bbc):,} articles, {n_tokens:,} tokens, {len(ents):,} entities in {s
       f"({n_tokens / secs:,.0f} tokens/s)")
 
 # %%
-DATA.mkdir(exist_ok=True)
-ents.to_parquet(DATA / "entities.parquet", index=False)
-print("saved data/entities.parquet")
+if not FAST:  # a FAST run must not replace the full file used by later notebooks
+    ents.to_parquet(DATA / "entities.parquet", index=False)
+    print("saved data/entities.parquet")
 ents.head()
 
 # %% [markdown]

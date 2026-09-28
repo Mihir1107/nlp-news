@@ -5,7 +5,7 @@
   "n_articles": 2089,
   "n_tokens": 924743,
   "n_entities": 83859,
-  "seconds": 84.0,
+  "seconds": 95.2,
   "pos_share_pct": {
     "NOUN": {
       "business": 20.8,
