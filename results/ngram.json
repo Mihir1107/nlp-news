@@ -1,0 +1,140 @@
+{
+  "name": "ngram",
+  "fast_mode": false,
+  "dataset": "bbc",
+  "n_train_sentences": 31367,
+  "n_test_sentences": 7591,
+  "vocab_size": 17514,
+  "addk_k": 0.01,
+  "perplexity": [
+    {
+      "n": 1,
+      "test PPL none": 963.5,
+      "test PPL laplace": 968.2,
+      "test PPL add-k=0.01": 963.5,
+      "train PPL add-k=0.01": 1078.9,
+      "test n-grams unseen in train": "0.0%"
+    },
+    {
+      "n": 2,
+      "test PPL none": Infinity,
+      "test PPL laplace": 2251.8,
+      "test PPL add-k=0.01": 551.4,
+      "train PPL add-k=0.01": 148.6,
+      "test n-grams unseen in train": "25.7%"
+    },
+    {
+      "n": 3,
+      "test PPL none": Infinity,
+      "test PPL laplace": 8637.8,
+      "test PPL add-k=0.01": 2891.8,
+      "train PPL add-k=0.01": 134.1,
+      "test n-grams unseen in train": "63.9%"
+    }
+  ],
+  "sentence_logprob": [
+    {
+      "sentence": "normal news",
+      "n=1 none": -58.3,
+      "n=1 laplace": -58.5,
+      "n=1 addk": -58.3,
+      "n=2 none": -Infinity,
+      "n=2 laplace": -58.2,
+      "n=2 addk": -40.7,
+      "n=3 none": -Infinity,
+      "n=3 laplace": -74.4,
+      "n=3 addk": -54.4
+    },
+    {
+      "sentence": "same words shuffled",
+      "n=1 none": -58.3,
+      "n=1 laplace": -58.5,
+      "n=1 addk": -58.3,
+      "n=2 none": -Infinity,
+      "n=2 laplace": -78.3,
+      "n=2 addk": -79.0,
+      "n=3 none": -Infinity,
+      "n=3 laplace": -88.9,
+      "n=3 addk": -87.2
+    },
+    {
+      "sentence": "unseen word",
+      "n=1 none": -54.4,
+      "n=1 laplace": -54.6,
+      "n=1 addk": -54.4,
+      "n=2 none": -Infinity,
+      "n=2 laplace": -61.0,
+      "n=2 addk": -47.5,
+      "n=3 none": -Infinity,
+      "n=3 laplace": -75.1,
+      "n=3 addk": -59.0
+    },
+    {
+      "sentence": "sports",
+      "n=1 none": -62.6,
+      "n=1 laplace": -62.8,
+      "n=1 addk": -62.6,
+      "n=2 none": -Infinity,
+      "n=2 laplace": -63.3,
+      "n=2 addk": -43.5,
+      "n=3 none": -Infinity,
+      "n=3 laplace": -77.4,
+      "n=3 addk": -58.2
+    },
+    {
+      "sentence": "politics",
+      "n=1 none": -55.5,
+      "n=1 laplace": -55.7,
+      "n=1 addk": -55.5,
+      "n=2 none": -Infinity,
+      "n=2 laplace": -59.0,
+      "n=2 addk": -41.9,
+      "n=3 none": -Infinity,
+      "n=3 laplace": -70.1,
+      "n=3 addk": -60.9
+    },
+    {
+      "sentence": "repeated phrase",
+      "n=1 none": -36.4,
+      "n=1 laplace": -36.6,
+      "n=1 addk": -36.4,
+      "n=2 none": -Infinity,
+      "n=2 laplace": -46.9,
+      "n=2 addk": -43.9,
+      "n=3 none": -Infinity,
+      "n=3 laplace": -59.4,
+      "n=3 addk": -57.6
+    }
+  ],
+  "probe_sentences": {
+    "normal news": "the government said it would cut taxes next year",
+    "same words shuffled": "it taxes next would year said cut the government",
+    "unseen word": "the government said it would ban cryptocurrency next year",
+    "sports": "the england captain scored twice in the second half",
+    "politics": "the prime minister faces a vote in parliament",
+    "repeated phrase": "we will we will we will"
+  },
+  "generated": {
+    "1": [
+      "highlands went end and government black building there it south micro were but june spend with russian mondays stands device be votes czech talking into",
+      "a sold society and they go talks sport the to tv we studying will last me",
+      "alerts rooney's the the tv fails occasions not network zealand individual in we been intend inflationary undeniable news over and the to which mr are",
+      "is news number off despite the to rate and is aguas single manager it used a 7 content unlikely death march the morning money said",
+      "is of that in the that club's subject post"
+    ],
+    "2": [
+      "russian authorities in the third cap record for me as orange film clips few hot favourite show it's always look at liverpool back lord lord",
+      "the brainchild of the political and arsenal go on the music market expectations and she trains nothing he receives a very verge of 3 and",
+      "read fun",
+      "but i would quit his own father merrin made a filing",
+      "but the valleys"
+    ],
+    "3": [
+      "russian authorities to identify the ways they use the money markets is that she might be better used by worldcom",
+      "the song was written by journalist s",
+      "read said",
+      "but metropolitan police commissioner sir john stevens said evidence obtained at guantanamo bay",
+      "but the teams we have got themselves into and mr blair's decision to hold a 28 1 shareholding to one sixth and final and now"
+    ]
+  }
+}
