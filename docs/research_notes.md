@@ -165,3 +165,21 @@ Note: the English stopword list now has **198** words (older tutorials say 179).
 - **WordNet lemmatizer quirk.** It strips a final "s" whenever the rest is a dictionary word: `us→u`,
   `has→ha`, `boss→bos`. `src/preprocess.py` guards against this (unit-tested).
 - **`NEWSMIND_FAST=1`** writes results to `results/fast/` (gitignored), so it never replaces real numbers.
+
+## 9. Found during Phase 2
+- **Import order matters.** `import src.utils` must come before `gensim.downloader`, otherwise GloVe
+  downloads again into `~/gensim-data` (it happened once; the stray copy was deleted). Every notebook from
+  nb05 on imports `src.utils` first.
+- **gensim prints `Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'`** during skip-gram
+  training (gensim 4.4.0, numpy 2.5.3). No Python exception is raised (`sys.unraisablehook` never fires),
+  the vectors have no NaN and the neighbours are sensible. It is a spurious Cython sentinel check.
+- **Word2Vec reproducibility** needs `workers=1` and `PYTHONHASHSEED=0` (set in `scripts/run_nb.sh`).
+  Two runs gave identical accuracy (0.8861).
+- **MPS is slower than CPU for the small packed BiLSTM** (nb06 measures both each run; it chose CPU).
+- **DistilBERT fine-tuning on MPS took 24.1 min** (1,250 steps, ~1 s/step) while the laptop used 7–9 GB
+  of swap. `Trainer` on MPS works with `save_strategy="no"` (no checkpoints, to save disk).
+- **Gotcha:** a predict-only `Trainer` reusing training args with `eval_strategy="epoch"` raises
+  `ValueError` (no eval_dataset). nb07 uses separate prediction args.
+- **Latency numbers are noisy on this machine.** DistilBERT batched inference measured 44.6 ms/doc in one
+  run and 10.0 ms/doc in the next, same model and data, depending on memory pressure. Treat ms/doc as
+  order-of-magnitude, and say so in nb12 and the viva.
