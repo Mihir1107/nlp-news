@@ -9,6 +9,9 @@ Endpoints
   POST /summarize   TextRank (default, fast) or DistilBART (loaded on first use, ~1.2 GB)
   POST /entities    named entities with spaCy
   POST /ask         NewsBot: rule-based router + TF-IDF retrieval + DistilBERT-SQuAD reader
+  GET  /results     headline numbers from results/*.json (for the web app's results page)
+  GET  /samples     real example texts and questions (for the web app)
+  /                 the web app (frontend/dist), if it has been built with `npm run build`
 """
 import json
 import time
@@ -21,14 +24,16 @@ import pandas as pd
 import spacy
 import torch
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 from transformers import AutoModelForSeq2SeqLM, AutoModelForSequenceClassification, AutoTokenizer
 
 from src.data import AG_LABELS, load
 from src.preprocess import clean
 from src.qa import NewsBot
-from src.textrank import textrank_summary
-from src.utils import DATA, MODELS, RESULTS, get_device
+from src.evaluate import load_results
+from src.textrank import textrank_rank
+from src.utils import DATA, MODELS, RESULTS, ROOT, get_device
 
 MAX_CHARS = 10_000
 BART_NAME = "sshleifer/distilbart-cnn-12-6"
@@ -89,8 +94,10 @@ async def lifespan(app: FastAPI):
     state["bert"] = AutoModelForSequenceClassification.from_pretrained(MODELS / "distilbert-agnews").to(device).eval()
     state["nlp"] = spacy.load("en_core_web_sm")
     threshold = json.loads((RESULTS / "qa.json").read_text())["threshold"]  # tuned in nb10
-    state["bot"] = NewsBot(load("bbc"), entities=pd.read_parquet(DATA / "entities.parquet"),
+    bbc = load("bbc")
+    state["bot"] = NewsBot(bbc, entities=pd.read_parquet(DATA / "entities.parquet"),
                            classifier=state["tfidf"], device=device, threshold=threshold)
+    state["samples"] = make_samples(bbc)
     # Warm-up: NLTK loads its tagger/WordNet and PyTorch compiles GPU kernels on first use.
     # Doing it here keeps the first real request fast.
     classify(ClassifyIn(text="Warm-up sentence about markets.", model="tfidf"))
@@ -137,7 +144,10 @@ def classify(req: ClassifyIn):
 def summarize(req: SummarizeIn):
     start = time.perf_counter()
     if req.method == "textrank":
-        return {"summary": textrank_summary(req.text, k=req.sentences), "method": "textrank",
+        sentences, scores = textrank_rank(req.text)
+        top = sorted(scores.argsort()[::-1][:req.sentences].tolist())  # best k, in document order
+        return {"summary": " ".join(sentences[i] for i in top), "method": "textrank",
+                "sentences": sentences, "scores": [round(float(x), 4) for x in scores], "selected": top,
                 "truncated": False, "latency_ms": ms_since(start)}
     if "bart" not in state:  # lazy load: only the first DistilBART request pays for it
         state["bart_tok"] = AutoTokenizer.from_pretrained(BART_NAME)
@@ -164,3 +174,57 @@ def entities(req: TextIn):
 def ask(req: AskIn):
     start = time.perf_counter()
     return {**state["bot"].chat(req.question), "latency_ms": ms_since(start)}
+
+
+# ---- Data for the web app ----
+def make_samples(bbc: pd.DataFrame) -> dict:
+    """Real example inputs: one AG test headline per class, BBC articles, and NewsBot questions."""
+    ag = load("ag_test").groupby("label").head(1).sort_values("label")
+    articles = bbc.set_index("id").loc[[1744, 1366, 1012]]
+    qa = json.loads((ROOT / "docs" / "qa_pairs.json").read_text())
+    return {
+        "headlines": [{"text": t, "label": AG_LABELS[l]} for t, l in zip(ag.text, ag.label)],
+        "articles": [{"id": int(i), "title": a.title, "body": a.body} for i, a in articles.iterrows()],
+        "questions": [q["question"] for q in qa["answerable"][8:13]] + [qa["unanswerable"][0]],
+        "commands": ["summarize article 1744", "who is mentioned in article 109", "what topic is article 1012"],
+    }
+
+
+@app.get("/samples")
+def samples():
+    return state["samples"]
+
+
+@app.get("/results")
+def results():
+    """The headline numbers of every experiment, read from results/*.json (never typed in)."""
+    R = load_results()
+    names = {"bow": "BoW + LR", "tfidf": "TF-IDF + LR", "word2vec": "Word2Vec avg + LR",
+             "glove": "GloVe avg + LR", "bilstm": "BiLSTM", "distilbert": "DistilBERT"}
+    return {
+        "classification": [{"key": k, "model": n, "accuracy": R[k]["metrics"]["accuracy"],
+                            "macro_f1": R[k]["metrics"]["macro_f1"], "train_s": R[k]["train_time_s"],
+                            "infer_ms": R[k]["infer_ms_per_doc"], "size_mb": R[k]["model_size_mb"]}
+                           for k, n in names.items() if k in R],
+        "summarization": R["summarization"]["rouge"] if "summarization" in R else [],
+        "qa": {k: v for k, v in R.get("qa", {}).items() if k != "questions"},
+        "tweets": [r for r in R.get("tweet_sentiment", {}).get("results", [])
+                   if r["preprocessing"] in ("full", "raw text")],
+        # Single numbers quoted in the web app's explanatory text.
+        "facts": {
+            "qa_threshold": R["qa"]["threshold"],
+            "ner_precision": R["pos_ner"]["ner_hand_check"]["precision_exact"],
+            "ner_checked": R["pos_ner"]["ner_hand_check"]["predicted_entities"],
+            "bart_real_errors": len(R["summarization"]["hand_review"]["real_errors"]),
+            "bart_checked": R["summarization"]["n_articles"],
+            "n_articles": R["pos_ner"]["n_articles"],
+            "ag_n_test": R["tfidf"]["n_test"],
+            "tweets_n_test": R["tweet_sentiment"]["n_test"],
+        },
+    }
+
+
+# The built web app is served last, so it never shadows the API routes above.
+FRONTEND = ROOT / "frontend" / "dist"
+if FRONTEND.exists():
+    app.mount("/", StaticFiles(directory=FRONTEND, html=True), name="frontend")

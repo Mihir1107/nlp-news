@@ -44,3 +44,4 @@ def test_router_and_reader(bot):
     assert "no article 9" in bot.chat("summarise article 9")["answer"]
     r = bot.chat("Who did Rafael Nadal beat?")
     assert r["intent"] == "question" and r["answer"] == "Andy Roddick" and r["article_id"] == 0
+    assert r["passage"][r["answer_start"]:r["answer_end"]] == "Andy Roddick"   # offsets point at the answer

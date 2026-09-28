@@ -200,3 +200,19 @@ Note: the English stopword list now has **198** words (older tutorials say 179).
   emoticons. The small, significant TF-IDF gain from "emoji handling" is a training-side effect (verified on
   test tweets with no emoji/emoticon: +0.0032 macro-F1, CI [+0.0007, +0.0054]).
 - **Test tweets with hashtags: 39.3%** (not ~19%, which was an early train-set estimate).
+
+## 11. Found while building the web app
+- **npm registry stalls for some packages on this network.** Metadata for `vite`, `framer-motion`,
+  `react-dom` and `scheduler` repeatedly stalled mid-download (e.g. 283 KB after 60 s), while others (`react`,
+  `esbuild`) came back in under a second. Clearing the npm cache and using the npmmirror.com mirror did not help.
+  - Vite was dropped: `esbuild` alone bundles the app (`frontend/build.mjs`), which is also simpler to explain.
+  - React 19.2.8, react-dom, scheduler, framer-motion 12.42.2 (+ motion-dom, motion-utils, tslib) and
+    esbuild 0.25.12 (+ its macOS arm64 binary) were **copied from other projects already on this laptop**
+    into `frontend/node_modules`. The two font packages were downloaded as tarballs; their SHA-1 matched the
+    registry's published checksums. `frontend/package.json` pins exactly these versions, so on a normal
+    network `npm install` gives the same tree.
+- **Port 8000 was already used by another program on this laptop.** The demo script starts the API on 8765.
+- **Browser check (Playwright, Chromium):** all five views exercised at 1360×900 and 390×844 (no horizontal
+  scrolling), keyboard tab navigation with arrow keys, visible focus ring, the 422 error path, the DistilBART
+  lazy load (3.0 s including load), and no console errors other than the intended 422. Screenshots are in
+  `report/figures/web_*.png`.

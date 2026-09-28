@@ -54,6 +54,9 @@ notebooks' stored outputs.
 - 4.10 Module V, summarization: TextRank, Lead-3, DistilBART; hand-reviewed unsupported content (nb09).
 - 4.11 Module V, QA chatbot: chunking, retriever, reader, threshold, rule-based router (nb10).
 - 4.12 Module V, REST API: endpoints, validation, truncation, lifespan loading, tests (api/, tests/test_api.py).
+- 4.13 Web app: the five views and what each shows, how it calls the API, design choices (highlighter marks as the
+  way to show model output on the text); screenshots `figures/web_topic.png`, `web_summary_textrank.png`,
+  `web_entities.png`, `web_ask.png`, `web_results.png`.
 
 ## 5. Results
 - Table 1 (AG News) + `figures/accuracy_vs_cost.png` + `figures/confusion_tfidf_best.png` + bootstrap table.

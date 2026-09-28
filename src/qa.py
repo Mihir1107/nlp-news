@@ -74,7 +74,7 @@ class Reader:
                 prob = float(s.softmax(0)[i] * e.softmax(0)[j])  # P(start) * P(end) in this passage
                 a, b = offsets[p, ctx[i], 0], offsets[p, ctx[j], 1]
                 best = {"score": float(pair[i, j]), "confidence": prob, "passage": p,
-                        "answer": contexts[p][a:b]}
+                        "answer": contexts[p][a:b], "start": int(a), "end": int(b)}
         return best
 
 
@@ -95,6 +95,7 @@ class NewsBot:
         return {"intent": "question", "answer": span["answer"] if known else "I don't know.",
                 "best_guess": span["answer"], "confidence": round(span["confidence"], 4),
                 "article_id": int(src["article_id"]), "category": src["category"], "title": src["title"],
+                "passage": src["text"], "answer_start": span["start"], "answer_end": span["end"],
                 "retrieved_article_ids": [int(p["article_id"]) for p in passages]}
 
     # ---- Rule-based intent router (regular expressions, no learning) ----

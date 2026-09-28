@@ -275,3 +275,29 @@ question set.
 A SQuAD 2.0 reader that can say "no answer"; re-ranking QA spans by retrieval score as well; a larger spaCy
 model (`en_core_web_trf`) for NER; Kneser–Ney smoothing for the n-gram LM; human evaluation of summaries
 instead of ROUGE only.
+
+## H. The web app (frontend/)
+
+**56. How does the web app talk to the models?**
+It is a static page (React) served by FastAPI at `/`. Each view calls one endpoint with `fetch` and JSON
+(`frontend/src/api.js`): Topic → `POST /classify`, Summary → `POST /summarize`, Names and places →
+`POST /entities`, Ask → `POST /ask`, results → `GET /results`. No model runs in the browser.
+
+**57. Why build it with React and esbuild, and why are the fonts bundled?**
+React keeps each view's state (inputs, results, the chat) in components, so switching tabs does not lose
+anything; the five views stay mounted and only the visible one is shown. esbuild turns the JSX, CSS and font
+files into `frontend/dist/` in one step (`build.mjs`). Bundled fonts mean the demo works without internet.
+
+**58. How is TextRank's choice made visible?**
+`/summarize` returns every sentence with its PageRank score and the indices of the kept ones
+(`src/textrank.py:textrank_rank`). The page shows the whole article, marks the kept sentences in rank order
+and draws a line for each sentence's score relative to the best one.
+
+**59. How does the "highlighter" animation work?**
+`components/ui.jsx:Marker` is a `<mark>` whose background is a solid gradient; Framer Motion animates its
+`background-size` width from 0% to 100%, so the colour sweeps left to right. `box-decoration-break: clone`
+gives each wrapped line its own stroke. With the OS "reduce motion" setting on, the mark appears instantly.
+
+**60. Are the numbers on the results page typed into the frontend?**
+No. `GET /results` reads `results/*.json` on every request (`api/app.py:results`), including the few numbers
+quoted in the explanatory text (NER precision, threshold, sample sizes).

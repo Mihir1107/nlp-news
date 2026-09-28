@@ -31,7 +31,8 @@ tables, and it refuses to run if any result was produced in FAST mode.
 
 ```mermaid
 flowchart TB
-    C[Client: curl / Swagger UI /docs] -->|JSON| V{"Pydantic validation<br/>1–10,000 chars, known model/method"}
+    W["Web app (frontend/dist, served at /)<br/>React + Framer Motion"] -->|fetch JSON| V
+    C[curl / Swagger UI at /docs] -->|JSON| V{"Pydantic validation<br/>1–10,000 chars, known model/method"}
     V -->|invalid| E422[HTTP 422 + reason]
     V --> R{Endpoint}
 
@@ -40,6 +41,7 @@ flowchart TB
     R -->|/summarize textrank| TR["src/textrank.py<br/>TF-IDF sentence graph → PageRank → top-k"]
     R -->|/summarize distilbart| DB["DistilBART generate()<br/>lazy-loaded · input cut at 1,024 tokens"]
     R -->|/entities| S[spaCy en_core_web_sm NER]
+    R -->|/results /samples| J["results/*.json · docs/qa_pairs.json<br/>real example texts"]
     R -->|/ask| NBOT
 
     subgraph NBOT["NewsBot (src/qa.py)"]
@@ -58,8 +60,25 @@ flowchart TB
 
 Start-up (FastAPI `lifespan`) loads TF-IDF+LR, DistilBERT, spaCy and NewsBot once, then runs one warm-up
 prediction per classifier so the first real request is not slow. DistilBART (1.2 GB) loads on its first request.
+The built web app is mounted at `/` *after* all API routes, so it can never shadow an endpoint.
 
-## 3. Modules
+## 3. The web app (`frontend/`)
+
+One page with five views, each calling one endpoint. Every model result is drawn onto the text itself with
+an animated highlighter mark (`components/ui.jsx:Marker`, a background gradient whose width grows 0 → 100%).
+
+| View | Endpoint | What it shows |
+|---|---|---|
+| Topic | `POST /classify` | label, class probabilities as animated bars; "Compare both" runs TF-IDF and DistilBERT side by side |
+| Summary | `POST /summarize` | TextRank: the whole article, kept sentences marked in rank order, PageRank score per sentence. DistilBART: generated text revealed word by word |
+| Names and places | `POST /entities` | entities marked in the text by kind; the legend filters one kind |
+| Ask the archive | `POST /ask` | chat; answer marked inside its source passage; confidence bar with the tuned "I don't know" threshold |
+| How good is it? | `GET /results` | dot plot of classifier accuracy, bars for ROUGE, QA and tweet results, all read from `results/*.json` |
+
+Build: `esbuild` bundles `src/main.jsx` (JSX, CSS, fonts) into `dist/` (`frontend/build.mjs`). Fonts are bundled,
+so the app needs no internet. Motion respects the operating system's "reduce motion" setting.
+
+## 4. Modules
 
 | File | Role | From scratch? | Tested in |
 |---|---|---|---|
@@ -71,4 +90,5 @@ prediction per classifier so the first real request is not slow. DistilBART (1.2
 | `src/textrank.py` | TextRank + PageRank power iteration | **yes** | `tests/test_textrank.py` (PageRank vs networkx) |
 | `src/qa.py` | chunking, retriever, reader, NewsBot, router | retriever uses our TF-IDF | `tests/test_qa.py` |
 | `src/evaluate.py` | accuracy, macro P/R/F1, confusion matrix, SQuAD EM/F1, results JSON | metrics via sklearn, EM/F1 ours | `tests/test_qa.py` |
-| `api/app.py` | FastAPI service | – | `tests/test_api.py` |
+| `api/app.py` | FastAPI service, also serves the web app | – | `tests/test_api.py` |
+| `frontend/src/` | React web app (App.jsx, one component per view, ui.jsx shared pieces) | – | checked in a browser (see README) |

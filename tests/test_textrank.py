@@ -36,3 +36,11 @@ def test_summary_keeps_order_and_picks_central_sentences():
 def test_short_text_and_lead():
     assert textrank_summary("One sentence only.", k=3) == "One sentence only."
     assert lead_summary(TEXT, k=1) == "Oil prices rose sharply on Monday."
+
+
+def test_rank_scores_match_summary():
+    from src.textrank import textrank_rank
+    sents, scores = textrank_rank(TEXT)
+    assert len(sents) == len(scores) == 5 and np.isclose(scores.sum(), 1.0)
+    best = sents[int(np.argmax(scores))]
+    assert best in textrank_summary(TEXT, k=1)

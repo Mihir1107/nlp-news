@@ -47,11 +47,18 @@ def sentence_graph(sentences: list[str]) -> np.ndarray:
     return W
 
 
-def textrank_summary(text: str, k: int = 3) -> str:
+def textrank_rank(text: str) -> tuple[list[str], np.ndarray]:
+    """The article's sentences and the PageRank score of each (used to show *why* one was picked)."""
     sentences = split_sentences(text)
+    if len(sentences) < 2:
+        return sentences, np.ones(len(sentences))
+    return sentences, pagerank(sentence_graph(sentences))
+
+
+def textrank_summary(text: str, k: int = 3) -> str:
+    sentences, scores = textrank_rank(text)
     if len(sentences) <= k:
         return " ".join(sentences)
-    scores = pagerank(sentence_graph(sentences))
     top = sorted(np.argsort(-scores)[:k])          # best k, then back into document order
     return " ".join(sentences[i] for i in top)
 

@@ -57,7 +57,10 @@ def test_summarize_textrank(client):
     text = ("Oil prices rose sharply on Monday. Traders said supplies were tight. The football team won. "
             "Oil producers promised to raise supplies. Analysts expect oil prices to stay high.")
     r = client.post("/summarize", json={"text": text, "sentences": 2})
-    assert r.status_code == 200 and "football" not in r.json()["summary"]
+    body = r.json()
+    assert r.status_code == 200 and "football" not in body["summary"]
+    assert len(body["sentences"]) == len(body["scores"]) == 5 and len(body["selected"]) == 2
+    assert all(body["sentences"][i] in body["summary"] for i in body["selected"])
 
 
 def test_summarize_distilbart_lazy_load(client):
@@ -78,6 +81,25 @@ def test_entities(client):
 def test_ask(client):
     r = client.post("/ask", json={"question": "Who is the head of Tiga?"}).json()
     assert r["intent"] == "question" and r["answer"] == "Fred Hasson"
+    assert r["passage"][r["answer_start"]:r["answer_end"]] == "Fred Hasson"
     r = client.post("/ask", json={"question": "summarize article 5"}).json()
     assert r["intent"] == "summarize" and r["article_id"] == 5
     assert client.post("/ask", json={"question": " "}).status_code == 422
+
+
+def test_results_and_samples(client):
+    res = client.get("/results").json()
+    assert {r["key"] for r in res["classification"]} == {"bow", "tfidf", "word2vec", "glove", "bilstm", "distilbert"}
+    assert 0 < res["qa"]["reader_f1"] <= 1 and len(res["summarization"]) == 3
+    s = client.get("/samples").json()
+    assert len(s["headlines"]) == 4 and len(s["articles"]) == 3 and s["questions"]
+
+
+def test_web_app_served_without_shadowing_api(client):
+    from api.app import FRONTEND
+    if not FRONTEND.exists():
+        pytest.skip("web app not built: cd frontend && npm install && npm run build")
+    page = client.get("/")
+    assert page.status_code == 200 and "<div id=\"root\">" in page.text
+    assert client.get("/assets/app.js").status_code == 200
+    assert client.get("/health").json()["status"] == "ok"       # API routes still win over the static mount

@@ -7,7 +7,10 @@ NewsMind covers the whole syllabus in 12 notebooks: preprocessing → BoW/TF-IDF
 Word2Vec/GloVe → BiLSTM → BERT/GPT-2 → syntax & semantics → summarization → QA chatbot → tweet sentiment →
 comparison. Everything the syllabus says to *implement* (TF-IDF, n-gram LM, TextRank/PageRank) is written
 from scratch in `src/`, unit-tested, and checked against the library version. A FastAPI service exposes the
-classifier, summarizers, NER and the chatbot.
+classifier, summarizers, NER and the chatbot, and serves a web app that draws every model result onto the text
+with an animated highlighter.
+
+![NewsMind web app: TextRank marks the sentences it keeps](report/figures/web_summary_textrank.png)
 
 ## Setup
 
@@ -16,7 +19,9 @@ uv venv --python 3.12 .venv && source .venv/bin/activate
 uv pip install -r requirements.txt               # pinned; full lock in requirements-lock.txt
 python scripts/download_data.py                  # datasets, NLTK, spaCy, GloVe, HF models (~4 GB), splits
 python scripts/download_data.py --skip-models    # lighter: no transformer weights
-pytest                                           # 63 tests (API tests need the trained models)
+pytest                                           # 66 tests (API tests need the trained models)
+
+cd frontend && npm install && npm run build && cd ..   # web app -> frontend/dist (needs Node 18+, once)
 ```
 
 - `NEWSMIND_FAST=1` shrinks the AG/tweet splits to 500 rows per class for quick runs. FAST results go to
@@ -41,11 +46,28 @@ pytest                                           # 63 tests (API tests need the 
 Full tables: [docs/RESULTS.md](docs/RESULTS.md)
 <!-- RESULTS:END -->
 
-## REST API
+## Web app
 
 ```bash
 uvicorn api.app:app            # start-up loads TF-IDF, DistilBERT, spaCy and NewsBot (~15 s)
 ```
+
+Open **http://127.0.0.1:8000/**. If port 8000 is taken by another program, add `--port 8765` and use that port.
+
+| View | What you see |
+|---|---|
+| Topic | TF-IDF and/or DistilBERT label with animated probability bars; "Compare both" puts them side by side |
+| Summary | TextRank marks the sentences it keeps, in rank order, with each sentence's PageRank score; DistilBART's summary appears word by word |
+| Names and places | spaCy entities marked in the text by kind; click a legend colour to show one kind |
+| Ask the archive | chat with NewsBot; answers are marked inside their source passage, with the confidence threshold on the bar |
+| How good is it? | the evaluation numbers, read live from `results/*.json` |
+
+The app is React 19 + Framer Motion, bundled by esbuild (`frontend/build.mjs`) into `frontend/dist/`, which
+FastAPI serves. Fonts (Newsreader, Bricolage Grotesque) are bundled, so it works offline. Motion follows the
+operating system's "reduce motion" setting. While editing the frontend, `npm run watch` rebuilds on every save.
+Screenshots: `report/figures/web_*.png`.
+
+## REST API
 
 Swagger UI (interactive docs, try every endpoint in the browser): **http://127.0.0.1:8000/docs**
 
@@ -53,9 +75,11 @@ Swagger UI (interactive docs, try every endpoint in the browser): **http://127.0
 |---|---|---|
 | `GET /health` | – | loaded models, device |
 | `POST /classify` | `{"text", "model": "tfidf" \| "distilbert"}` | default `tfidf`; returns label, confidence, class probabilities, `truncated`, `latency_ms` |
-| `POST /summarize` | `{"text", "method": "textrank" \| "distilbart", "sentences"}` | default `textrank`; DistilBART is loaded on its first request |
+| `POST /summarize` | `{"text", "method": "textrank" \| "distilbart", "sentences"}` | default `textrank` (also returns every sentence's PageRank score); DistilBART is loaded on its first request |
 | `POST /entities` | `{"text"}` | spaCy entities with character offsets |
-| `POST /ask` | `{"question"}` | NewsBot: "summarize article N", "who is mentioned in article N", "what topic is …", or any factual question |
+| `POST /ask` | `{"question"}` | NewsBot: "summarize article N", "who is mentioned in article N", "what topic is …", or any factual question; returns the source passage and answer offsets |
+| `GET /results` | – | headline numbers from `results/*.json` (used by the web app) |
+| `GET /samples` | – | real example texts and questions (used by the web app) |
 
 Input rules: `text` must be 1–10,000 characters and not only whitespace; `model`/`method` must be one of the
 listed values. Anything else returns **HTTP 422** with the reason. DistilBERT reads at most 512 tokens and
@@ -74,15 +98,18 @@ $ curl -s -X POST localhost:8000/classify -H 'Content-Type: application/json' \
 
 $ curl -s -X POST localhost:8000/summarize -H 'Content-Type: application/json' \
     -d '{"text": "Oil prices rose sharply on Monday as traders worried about supplies. Opec said it would not raise output. The football team won the cup final. Analysts expect oil prices to stay high this winter.", "sentences": 2}'
-{"summary":"Oil prices rose sharply on Monday as traders worried about supplies. Analysts expect oil prices to stay high this winter.","method":"textrank","truncated":false,"latency_ms":1.75}
+{"summary":"Oil prices rose sharply on Monday as traders worried about supplies. Analysts expect oil prices to stay high this winter.","method":"textrank","sentences":["Oil prices rose sharply on Monday as traders worried about supplies.","Opec said it would not raise output.","The football team won the cup final.","Analysts expect oil prices to stay high this winter."],"scores":[0.4348,0.0652,0.0652,0.4348],"selected":[0,3],"truncated":false,"latency_ms":1.3}
 
 $ curl -s -X POST localhost:8000/entities -H 'Content-Type: application/json' \
     -d '{"text": "Gordon Brown will deliver the Budget in London on Wednesday."}'
 {"entities":[{"text":"Gordon Brown","label":"PERSON","start":0,"end":12},{"text":"Budget","label":"LOC","start":30,"end":36},{"text":"London","label":"GPE","start":40,"end":46},{"text":"Wednesday","label":"DATE","start":50,"end":59}],"latency_ms":4.41}
 
 $ curl -s -X POST localhost:8000/ask -H 'Content-Type: application/json' \
-    -d '{"question": "Which play did Uganda ban?"}'
-{"intent":"question","answer":"The Vagina Monologues","best_guess":"The Vagina Monologues","confidence":0.9325,"article_id":1276,"category":"entertainment","title":"Uganda bans Vagina Monologues","retrieved_article_ids":[1276,1276,1276],"latency_ms":55.83}
+    -d '{"question": "Which play did Uganda ban?"}' \
+  | python3 -c "import json,sys; r=json.load(sys.stdin); print({k: r[k] for k in ('intent','answer','confidence','article_id','title','answer_start','answer_end')})"
+{'intent': 'question', 'answer': 'The Vagina Monologues', 'confidence': 0.9325, 'article_id': 1276, 'title': 'Uganda bans Vagina Monologues', 'answer_start': 42, 'answer_end': 63}
+# the full response also has "passage" (the 783-character source passage; passage[42:63] is the answer),
+# "best_guess", "category", "retrieved_article_ids" and "latency_ms"
 
 $ curl -s -X POST localhost:8000/classify -H 'Content-Type: application/json' -d '{"text": ""}'
 {"detail":[{"type":"string_too_short","loc":["body","text"],"msg":"String should have at least 1 character","input":"","ctx":{"min_length":1}}]}   # HTTP 422
@@ -96,7 +123,8 @@ $ curl -s -X POST localhost:8000/classify -H 'Content-Type: application/json' -d
 src/         data.py (splits, text repair) · utils.py (paths, seed, device, timer) · preprocess.py (clean)
              tfidf.py · ngram.py · textrank.py  (from scratch)  · evaluate.py (metrics, results JSON) · qa.py (NewsBot)
 notebooks/   01–12: jupytext .py sources + executed .ipynb with stored outputs
-api/app.py   FastAPI service
+api/app.py   FastAPI service (also serves the web app)
+frontend/    React web app: src/App.jsx, one component per view, build.mjs (esbuild)
 tests/       pytest: splits, preprocessing, TF-IDF, n-gram, TextRank, QA, API
 results/     metrics JSON written by the notebooks (the only source of numbers in the docs)
 docs/        research_notes.md · RESULTS.md (generated) · ARCHITECTURE.md · DEMO_SCRIPT.md · qa_pairs.json
