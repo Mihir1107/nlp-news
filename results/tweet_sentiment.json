@@ -1,0 +1,234 @@
+{
+  "name": "tweet_sentiment",
+  "fast_mode": false,
+  "dataset": "tweet_eval/sentiment",
+  "n_train": 45615,
+  "n_test": 12284,
+  "label_distribution": {
+    "train": {
+      "negative": 0.155,
+      "neutral": 0.453,
+      "positive": 0.391
+    },
+    "test": {
+      "negative": 0.323,
+      "neutral": 0.483,
+      "positive": 0.193
+    }
+  },
+  "test_emoji_share": 0.0663,
+  "results": [
+    {
+      "model": "TF-IDF + LR",
+      "preprocessing": "full",
+      "macro-recall": 0.5743,
+      "macro-F1": 0.5712,
+      "accuracy": 0.5969,
+      "negative recall": 0.3829,
+      "macro-F1 (emoji tweets)": 0.5772,
+      "fit s": 2.3
+    },
+    {
+      "model": "TF-IDF + LR",
+      "preprocessing": "no emoji handling",
+      "macro-recall": 0.5681,
+      "macro-F1": 0.5657,
+      "accuracy": 0.593,
+      "negative recall": 0.3766,
+      "macro-F1 (emoji tweets)": 0.5754,
+      "fit s": 2.9
+    },
+    {
+      "model": "TF-IDF + LR",
+      "preprocessing": "no hashtag handling",
+      "macro-recall": 0.5701,
+      "macro-F1": 0.5685,
+      "accuracy": 0.5957,
+      "negative recall": 0.3797,
+      "macro-F1 (emoji tweets)": 0.5746,
+      "fit s": 3.0
+    },
+    {
+      "model": "TF-IDF + LR",
+      "preprocessing": "neither",
+      "macro-recall": 0.5646,
+      "macro-F1": 0.5638,
+      "accuracy": 0.5931,
+      "negative recall": 0.3719,
+      "macro-F1 (emoji tweets)": 0.5684,
+      "fit s": 3.3
+    },
+    {
+      "model": "GloVe-Twitter avg + LR",
+      "preprocessing": "full",
+      "macro-recall": 0.6082,
+      "macro-F1": 0.6046,
+      "accuracy": 0.6114,
+      "negative recall": 0.5637,
+      "macro-F1 (emoji tweets)": 0.6198,
+      "fit s": 0.8
+    },
+    {
+      "model": "GloVe-Twitter avg + LR",
+      "preprocessing": "no emoji handling",
+      "macro-recall": 0.6052,
+      "macro-F1": 0.6032,
+      "accuracy": 0.6114,
+      "negative recall": 0.5604,
+      "macro-F1 (emoji tweets)": 0.6271,
+      "fit s": 0.9
+    },
+    {
+      "model": "GloVe-Twitter avg + LR",
+      "preprocessing": "no hashtag handling",
+      "macro-recall": 0.6101,
+      "macro-F1": 0.6061,
+      "accuracy": 0.6124,
+      "negative recall": 0.5723,
+      "macro-F1 (emoji tweets)": 0.6103,
+      "fit s": 1.0
+    },
+    {
+      "model": "GloVe-Twitter avg + LR",
+      "preprocessing": "neither",
+      "macro-recall": 0.6073,
+      "macro-F1": 0.6048,
+      "accuracy": 0.6121,
+      "negative recall": 0.569,
+      "macro-F1 (emoji tweets)": 0.6244,
+      "fit s": 1.0
+    },
+    {
+      "model": "twitter-RoBERTa (reference, not fair)",
+      "preprocessing": "raw text",
+      "macro-recall": 0.7349,
+      "macro-F1": 0.724,
+      "accuracy": 0.7218,
+      "negative recall": 0.8066,
+      "macro-F1 (emoji tweets)": 0.7224,
+      "fit s": 0.0
+    }
+  ],
+  "ablation": [
+    {
+      "model": "TF-IDF + LR",
+      "full vs": "neither",
+      "subset": "all tweets",
+      "macro-F1 gain of full": 0.0074,
+      "95% CI": "[+0.0027, +0.0120]",
+      "significant": true
+    },
+    {
+      "model": "TF-IDF + LR",
+      "full vs": "no emoji handling",
+      "subset": "all tweets",
+      "macro-F1 gain of full": 0.0056,
+      "95% CI": "[+0.0025, +0.0086]",
+      "significant": true
+    },
+    {
+      "model": "TF-IDF + LR",
+      "full vs": "no emoji handling",
+      "subset": "emoji tweets (n=814)",
+      "macro-F1 gain of full": 0.0018,
+      "95% CI": "[-0.0265, +0.0308]",
+      "significant": false
+    },
+    {
+      "model": "TF-IDF + LR",
+      "full vs": "no emoji handling",
+      "subset": "emoticon tweets (n=44)",
+      "macro-F1 gain of full": 0.0101,
+      "95% CI": "[-0.2038, +0.2159]",
+      "significant": false
+    },
+    {
+      "model": "TF-IDF + LR",
+      "full vs": "no emoji handling",
+      "subset": "tweets with neither (n=11426)",
+      "macro-F1 gain of full": 0.0032,
+      "95% CI": "[+0.0007, +0.0054]",
+      "significant": true
+    },
+    {
+      "model": "TF-IDF + LR",
+      "full vs": "no hashtag handling",
+      "subset": "all tweets",
+      "macro-F1 gain of full": 0.0027,
+      "95% CI": "[-0.0013, +0.0063]",
+      "significant": false
+    },
+    {
+      "model": "TF-IDF + LR",
+      "full vs": "no hashtag handling",
+      "subset": "hashtag tweets (n=4823)",
+      "macro-F1 gain of full": 0.0041,
+      "95% CI": "[-0.0047, +0.0127]",
+      "significant": false
+    },
+    {
+      "model": "GloVe-Twitter avg + LR",
+      "full vs": "neither",
+      "subset": "all tweets",
+      "macro-F1 gain of full": -0.0002,
+      "95% CI": "[-0.0044, +0.0039]",
+      "significant": false
+    },
+    {
+      "model": "GloVe-Twitter avg + LR",
+      "full vs": "no emoji handling",
+      "subset": "all tweets",
+      "macro-F1 gain of full": 0.0013,
+      "95% CI": "[-0.0012, +0.0038]",
+      "significant": false
+    },
+    {
+      "model": "GloVe-Twitter avg + LR",
+      "full vs": "no emoji handling",
+      "subset": "emoji tweets (n=814)",
+      "macro-F1 gain of full": -0.0072,
+      "95% CI": "[-0.0317, +0.0148]",
+      "significant": false
+    },
+    {
+      "model": "GloVe-Twitter avg + LR",
+      "full vs": "no emoji handling",
+      "subset": "emoticon tweets (n=44)",
+      "macro-F1 gain of full": -0.1184,
+      "95% CI": "[-0.2492, +0.0068]",
+      "significant": false
+    },
+    {
+      "model": "GloVe-Twitter avg + LR",
+      "full vs": "no emoji handling",
+      "subset": "tweets with neither (n=11426)",
+      "macro-F1 gain of full": -0.0003,
+      "95% CI": "[-0.0020, +0.0013]",
+      "significant": false
+    },
+    {
+      "model": "GloVe-Twitter avg + LR",
+      "full vs": "no hashtag handling",
+      "subset": "all tweets",
+      "macro-F1 gain of full": -0.0015,
+      "95% CI": "[-0.0052, +0.0022]",
+      "significant": false
+    },
+    {
+      "model": "GloVe-Twitter avg + LR",
+      "full vs": "no hashtag handling",
+      "subset": "hashtag tweets (n=4823)",
+      "macro-F1 gain of full": -0.0049,
+      "95% CI": "[-0.0136, +0.0031]",
+      "significant": false
+    }
+  ],
+  "glove_twitter_test_oov": {
+    "full": 0.0766,
+    "no emoji handling": 0.0771,
+    "no hashtag handling": 0.0931,
+    "neither": 0.0937
+  },
+  "roberta_ms_per_tweet": 14.78,
+  "roberta_note": "reference ceiling, not a fair comparison"
+}

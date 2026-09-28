@@ -79,6 +79,8 @@ def plot_confusion(y_true, y_pred, label_names, ax=None, title=None):
 
 def _to_builtin(x):
     """json.dump helper: turn NumPy numbers/arrays into plain Python types."""
+    if isinstance(x, np.bool_):
+        return bool(x)
     if isinstance(x, np.integer):
         return int(x)
     if isinstance(x, np.floating):
