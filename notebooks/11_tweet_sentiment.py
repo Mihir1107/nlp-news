@@ -68,7 +68,7 @@ print(f"tweets containing emoji: train {train.text.map(lambda t: bool(EMOJI.sear
       f"test {has_emoji.mean():.1%} ({has_emoji.sum():,} tweets)")
 
 # %% [markdown]
-# Train has **no emoji at all** (the older SemEval training data had them stripped), while 6.5% of test
+# Train has **no emoji at all** (the older SemEval training data had them stripped), while ~6.6% of test
 # tweets have them. Any emoji-specific feature is unseen in training. The only way emoji can help is by
 # mapping them to words the model *has* seen ("😂" → "laugh", "😍" → "love").
 
