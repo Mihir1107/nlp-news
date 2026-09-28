@@ -1,0 +1,10 @@
+# Recreated by scripts/download_data.py
+data/
+models/*
+!models/.gitkeep
+.venv/
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+*.pyc
