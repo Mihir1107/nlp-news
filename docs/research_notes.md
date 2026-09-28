@@ -148,6 +148,6 @@ Note: the English stopword list now has **198** words (older tutorials say 179).
 - Loading both takes about 70 s, mostly the Twitter model. Budget for this in nb11.
 - gensim.downloader fetches its loader code from GitHub (accepted for coursework).
 
-## 7. Open questions for you
-1. Confirm the BBC source switch (SetFit → gopalkalpande, deduplicated to 2,089 articles).
-2. Confirm adding `ag_val` (2,000 rows, used only to monitor training).
+## 7. Decisions (approved at the Phase 0 checkpoint: "do what you think is best")
+1. BBC source is `gopalkalpande/bbc-news-summary`, deduplicated to 2,089 articles. SetFit is not used.
+2. `ag_val` (2,000 rows) is kept, only for monitoring training in nb06 and nb07.

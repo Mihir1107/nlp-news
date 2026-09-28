@@ -59,6 +59,17 @@ def parse_bbc_article(raw: str) -> tuple[str, str]:
     return title.strip(), fix_glued_sentences(body).strip()
 
 
+# ---- TweetEval text repair -------------------------------------------------
+def repair_tweet_text(text: str) -> str:
+    """Decode literal escape text like '\\u2019' or '\\ud83d\\ude02' into real characters.
+
+    11% of train tweets contain these escapes. Emoji are stored as two escaped
+    UTF-16 halves (a surrogate pair), so we rebuild the string through UTF-16.
+    """
+    text = re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m[1], 16)), text)
+    return text.encode("utf-16", "surrogatepass").decode("utf-16")
+
+
 # ---- Build splits (run once by scripts/download_data.py) -------------------
 def _stratified_take(df, n, label="label"):
     """Return (n stratified rows, the remaining rows). Deterministic via SEED."""
@@ -116,6 +127,9 @@ def build_splits() -> dict[str, pd.DataFrame]:
     # TweetEval: keep the official splits unchanged.
     for part in ["train", "val", "test"]:
         df = pd.read_parquet(RAW / f"tweet_{part}.parquet")
+        df = df.rename(columns={"text": "text_raw"})
+        df["text"] = df["text_raw"].map(repair_tweet_text)
+        df = df[["text", "label", "text_raw"]]
         df["label_name"] = df["label"].map(lambda i: TWEET_LABELS[i])
         out[f"tweet_{part}"] = df
 

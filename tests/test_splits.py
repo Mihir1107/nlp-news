@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 from src.data import (AG_LABELS, BBC_LABELS, build_splits, fix_glued_sentences, load,
-                      parse_bbc_article, repair_ag_text)
+                      parse_bbc_article, repair_ag_text, repair_tweet_text)
 from src.utils import SPLITS
 
 pytestmark = pytest.mark.skipif(not (SPLITS / "ag_train.parquet").exists(),
@@ -60,6 +60,7 @@ def test_bbc(s):
 def test_tweets(s):
     assert [len(s[f"tweet_{p}"]) for p in ["train", "val", "test"]] == [45_615, 2_000, 12_284]
     assert set(s["tweet_train"]["label"]) == {0, 1, 2}
+    assert not s["tweet_test"]["text"].str.contains("\\u", regex=False).any()
 
 
 # ---- Determinism and loader ------------------------------------------------
@@ -83,3 +84,4 @@ def test_repair_examples():
     assert parse_bbc_article("Big win..It rained.Then sun...Next day") == \
         ("Big win", "It rained. Then sun. Next day")
     assert fix_glued_sentences("U.S. firm") == "U.S. firm"   # abbreviations untouched
+    assert repair_tweet_text(r"it\u2019s \ud83d\ude02") == "it\u2019s \U0001F602"  # ’ and 😂

@@ -1,0 +1,23 @@
+{
+  "name": "preprocess",
+  "fast_mode": false,
+  "dataset": "ag_train",
+  "n_docs": 30000,
+  "seconds": 19.8,
+  "vocab_by_step": {
+    "raw (split on spaces)": 87223,
+    "+ lowercase + NLTK tokenize": 47647,
+    "+ remove punctuation": 47613,
+    "+ remove stop words": 47477,
+    "+ lemmatize (WordNet+POS)": 41297,
+    "(alt) + Porter stem instead": 35767
+  },
+  "tokens_by_step": {
+    "raw (split on spaces)": 1126242,
+    "+ lowercase + NLTK tokenize": 1252246,
+    "+ remove punctuation": 1126811,
+    "+ remove stop words": 765077,
+    "+ lemmatize (WordNet+POS)": 765077,
+    "(alt) + Porter stem instead": 765077
+  }
+}
