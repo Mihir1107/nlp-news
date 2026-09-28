@@ -61,7 +61,7 @@ pd.set_option("display.max_colwidth", 200)
 
 # %%
 BASE = "distilbert/distilbert-base-uncased"
-MODEL_DIR = MODELS / ("distilbert-agnews-fast" if FAST else "distilbert-agnews")
+MODEL_DIR = MODELS / "distilbert-agnews"
 RETRAIN = False
 
 tokenizer = AutoTokenizer.from_pretrained(BASE)
@@ -91,7 +91,7 @@ args = TrainingArguments(
     fp16=torch.cuda.is_available(),                   # mixed precision only on a CUDA GPU
 )
 info_path = MODEL_DIR / "train_info.json"
-if info_path.exists() and not RETRAIN:
+if info_path.exists() and not RETRAIN and not FAST:
     model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR)
     train_info = json.loads(info_path.read_text())
     print("loaded fine-tuned model from", MODEL_DIR.name, "| recorded training time:",
@@ -105,11 +105,12 @@ else:
     t = time.perf_counter(); trainer.train(); train_s = time.perf_counter() - t
     history = [{k: v for k, v in r.items() if k in ("epoch", "loss", "eval_loss", "eval_accuracy", "eval_macro_f1")}
                for r in trainer.state.log_history]
-    trainer.save_model(str(MODEL_DIR)); tokenizer.save_pretrained(str(MODEL_DIR))
     shutil.rmtree(MODEL_DIR / "_trainer", ignore_errors=True)
     train_info = {"train_time_s": round(train_s, 1), "device": str(device), "history": history}
-    info_path.write_text(json.dumps(train_info, indent=2))
-    print(f"trained in {train_s / 60:.1f} min, saved to {MODEL_DIR.name}")
+    if not FAST:  # a FAST run is a smoke test: never overwrite the real model
+        trainer.save_model(str(MODEL_DIR)); tokenizer.save_pretrained(str(MODEL_DIR))
+        info_path.write_text(json.dumps(train_info, indent=2))
+    print(f"trained in {train_s / 60:.1f} min" + ("" if FAST else f", saved to {MODEL_DIR.name}"))
 pd.DataFrame(train_info["history"])
 
 # %% [markdown]
@@ -125,7 +126,7 @@ out = eval_trainer.predict(test_ds)
 infer_ms = (time.perf_counter() - t) / len(test_ds) * 1000
 pred = out.predictions.argmax(-1)
 metrics = classification_metrics(test_df.label, pred, AG_LABELS)
-size_mb = sum(f.stat().st_size for f in MODEL_DIR.glob("*.safetensors")) / 1e6
+size_mb = sum(p.numel() * p.element_size() for p in model.parameters()) / 1e6  # weights in memory
 shutil.rmtree(MODEL_DIR / "_trainer", ignore_errors=True)
 print(f"accuracy {metrics['accuracy']}  macro-F1 {metrics['macro_f1']}  |  {infer_ms:.2f} ms/doc "
       f"(batched, {device})  |  {size_mb:.0f} MB")

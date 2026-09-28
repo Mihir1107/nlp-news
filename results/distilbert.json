@@ -35,7 +35,7 @@
     }
   },
   "train_time_s": 1448.2,
-  "infer_ms_per_doc": 18.619,
+  "infer_ms_per_doc": 9.962,
   "model_size_mb": 267.8,
   "history": [
     {
