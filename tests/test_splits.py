@@ -52,6 +52,7 @@ def test_bbc(s):
     assert sorted(bbc["category"].unique()) == BBC_LABELS
     assert (bbc["title"].str.len() > 0).all() and (bbc["summary"].str.len() > 0).all()
     assert not bbc["body"].str.contains(r"\.\.[A-Z]").any()  # no glued paragraphs left
+    assert not bbc["body"].str.contains("&#", regex=False).any()  # HTML entities decoded
     assert bbc["summ_sample"].sum() == 100
     assert abs((bbc["lm_split"] == "test").mean() - 0.2) < 0.01
 
@@ -82,6 +83,7 @@ def test_repair_examples():
     assert repair_ag_text("AT amp;T costs #36;10") == "AT&T costs $10"
     assert repair_ag_text("&lt;b&gt;Hi&lt;/b&gt; there\\again") == "Hi there again"
     assert repair_ag_text("laptops hellip;. and more") == "laptops \u2026. and more"
+    assert parse_bbc_article("Jos&#233; wins..He said.")[0] == "José wins"
     assert parse_bbc_article("Big win..It rained.Then sun...Next day") == \
         ("Big win", "It rained. Then sun. Next day")
     assert fix_glued_sentences("U.S. firm") == "U.S. firm"   # abbreviations untouched

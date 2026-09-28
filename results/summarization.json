@@ -23,7 +23,7 @@
       "rouge1 P": 0.948,
       "rouge1 R": 0.4542,
       "summary words": 65.82,
-      "seconds/article": 0.0163
+      "seconds/article": 0.0222
     },
     {
       "system": "DistilBART",
@@ -33,7 +33,7 @@
       "rouge1 P": 0.7533,
       "rouge1 R": 0.2566,
       "summary words": 49.13,
-      "seconds/article": 3.1152
+      "seconds/article": 3.0032
     }
   ],
   "distilbart": {

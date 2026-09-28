@@ -2,23 +2,23 @@
   "name": "ngram",
   "fast_mode": false,
   "dataset": "bbc",
-  "n_train_sentences": 31367,
+  "n_train_sentences": 31366,
   "n_test_sentences": 7591,
-  "vocab_size": 17514,
+  "vocab_size": 17510,
   "addk_k": 0.01,
   "perplexity": [
     {
       "n": 1,
-      "test PPL none": 963.5,
+      "test PPL none": 963.4,
       "test PPL laplace": 968.2,
       "test PPL add-k=0.01": 963.5,
-      "train PPL add-k=0.01": 1078.9,
+      "train PPL add-k=0.01": 1078.6,
       "test n-grams unseen in train": "0.0%"
     },
     {
       "n": 2,
       "test PPL none": Infinity,
-      "test PPL laplace": 2251.8,
+      "test PPL laplace": 2251.4,
       "test PPL add-k=0.01": 551.4,
       "train PPL add-k=0.01": 148.6,
       "test n-grams unseen in train": "25.7%"
@@ -26,8 +26,8 @@
     {
       "n": 3,
       "test PPL none": Infinity,
-      "test PPL laplace": 8637.8,
-      "test PPL add-k=0.01": 2891.8,
+      "test PPL laplace": 8635.8,
+      "test PPL add-k=0.01": 2891.0,
       "train PPL add-k=0.01": 134.1,
       "test n-grams unseen in train": "63.9%"
     }
@@ -39,7 +39,7 @@
       "n=1 laplace": -58.5,
       "n=1 addk": -58.3,
       "n=2 none": -Infinity,
-      "n=2 laplace": -58.2,
+      "n=2 laplace": -58.1,
       "n=2 addk": -40.7,
       "n=3 none": -Infinity,
       "n=3 laplace": -74.4,
@@ -116,10 +116,10 @@
   },
   "generated": {
     "1": [
-      "highlands went end and government black building there it south micro were but june spend with russian mondays stands device be votes czech talking into",
+      "secondary went end and government black building there it south broadband were but june spend with russian mondays inherit device be votes czech talking into",
       "a sold society and they go talks sport the to tv we studying will last me",
-      "alerts rooney's the the tv fails occasions not network zealand individual in we been intend inflationary undeniable news over and the to which mr are",
-      "is news number off despite the to rate and is aguas single manager it used a 7 content unlikely death march the morning money said",
+      "alerts exchange the the tv fails inquiry not network 37 individual in we been intend inflationary undeniable news over and the to which mr are",
+      "is news number off despite the to fastest and is aguas six manager it used a 7 content seems death march the morning money said",
       "is of that in the that club's subject post"
     ],
     "2": [

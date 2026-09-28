@@ -5,6 +5,8 @@ load_results(), so no number is ever typed in by hand.
 """
 import json
 import pickle
+import string
+from collections import Counter
 
 import numpy as np
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, \
@@ -31,6 +33,29 @@ def classification_metrics(y_true, y_pred, label_names=None) -> dict:
         "macro_f1": round(f1, 4),
         "per_class": per_class,
     }
+
+
+# ---- Question answering (SQuAD-style) ---------------------------------------
+def normalize_answer(text: str) -> str:
+    """Lowercase, drop punctuation and the articles a/an/the, squeeze spaces (the SQuAD rule)."""
+    text = "".join(ch for ch in text.lower() if ch not in string.punctuation)
+    return " ".join(w for w in text.split() if w not in ("a", "an", "the"))
+
+
+def exact_match(pred: str, golds: list[str]) -> float:
+    return float(any(normalize_answer(pred) == normalize_answer(g) for g in golds))
+
+
+def token_f1(pred: str, golds: list[str]) -> float:
+    """Best word-overlap F1 between the prediction and any acceptable answer."""
+    def f1(p, g):
+        p, g = normalize_answer(p).split(), normalize_answer(g).split()
+        common = sum((Counter(p) & Counter(g)).values())
+        if common == 0:
+            return 0.0
+        precision, recall = common / len(p), common / len(g)
+        return 2 * precision * recall / (precision + recall)
+    return max(f1(pred, g) for g in golds)
 
 
 def size_mb(obj) -> float:

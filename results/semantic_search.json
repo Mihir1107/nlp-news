@@ -220,11 +220,11 @@
     "n_docs": 2089,
     "category_precision_at_3": {
       "TF-IDF": 0.907,
-      "MiniLM": 0.9381
+      "MiniLM": 0.9379
     },
     "top3_overlap": 0.4385,
-    "tfidf_build_s": 11.1,
-    "minilm_encode_s": 9.5,
+    "tfidf_build_s": 18.0,
+    "minilm_encode_s": 24.1,
     "device": "mps"
   },
   "free_queries": [

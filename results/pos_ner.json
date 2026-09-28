@@ -3,9 +3,9 @@
   "fast_mode": false,
   "dataset": "bbc",
   "n_articles": 2089,
-  "n_tokens": 924743,
-  "n_entities": 83859,
-  "seconds": 95.2,
+  "n_tokens": 924724,
+  "n_entities": 83857,
+  "seconds": 114.6,
   "pos_share_pct": {
     "NOUN": {
       "business": 20.8,
@@ -86,12 +86,12 @@
     }
   },
   "entity_label_counts": {
-    "PERSON": 19546,
-    "ORG": 17101,
+    "PERSON": 19549,
+    "ORG": 17094,
     "DATE": 12674,
-    "GPE": 11206,
+    "GPE": 11207,
     "CARDINAL": 7673,
-    "NORP": 4282,
+    "NORP": 4283,
     "MONEY": 2546,
     "ORDINAL": 2260,
     "PERCENT": 1810,

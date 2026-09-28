@@ -55,6 +55,7 @@ def fix_glued_sentences(text: str) -> str:
 
 def parse_bbc_article(raw: str) -> tuple[str, str]:
     """Split a raw BBC article into (title, body) and restore paragraph breaks."""
+    raw = html.unescape(raw)                                   # 22 articles: "Jos&#233;" -> "José"
     title, _, body = raw.partition("..")                       # first ".." ends the title
     body = re.sub(r"(?<=[.!?\"'])\.\.(?=\S)", " ", body)       # "funds...Duncan"
     body = re.sub(r"\.\.(?=[A-Z\"'])", ". ", body)             # un-punctuated subheadings
@@ -115,7 +116,7 @@ def build_splits() -> dict[str, pd.DataFrame]:
         "category": raw["File_path"].values,
         "title": [t for t, _ in parsed],
         "body": [b for _, b in parsed],
-        "summary": raw["Summaries"].map(fix_glued_sentences).values,
+        "summary": raw["Summaries"].map(lambda t: fix_glued_sentences(html.unescape(t))).values,
     })
     bbc["label"] = bbc["category"].map(BBC_LABELS.index)
     # 80/20 article-level split for the n-gram LM (nb03), stratified by category.
