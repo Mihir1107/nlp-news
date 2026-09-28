@@ -84,12 +84,21 @@ print(f"{(svo.triples.str.len() > 0).sum()} of {len(svo)} sentences gave at leas
 svo
 
 # %% [markdown]
-# **Where the rules fail** (read the table): verbs whose subject is a clause or a pronoun give triples
-# that make no sense on their own ("it", "which"). Coordinated subjects ("Kenteris and Thanou") are
-# reduced to the first noun chunk. Reported speech ("X says Y") puts the real content in a `ccomp`
-# clause, which our rules skip. Sentences without a direct object give nothing. Triples are only as
-# good as the parse, and the parser also makes attachment errors (which noun a prepositional phrase
-# belongs to).
+# **Reading the table.** Clean hits: *(A strike, cause, traffic chaos)*, *(Michael Howard, back, stem cell
+# research)*, *(Security firms, warn about, a Windows virus)*. The failures are instructive:
+# - **Row 6, *(The parents, sue, Mart)***: the tokenizer splits "Wal-Mart" at the hyphen, so the noun
+#   chunk is just "Mart". *(The parents, sue by, rock group)* is a **PP-attachment error**: "by rock group"
+#   belongs to "a CD", but the parser hung it on "suing".
+# - **Row 3, *(officials, say on, Tuesday)***: a time adjunct is taken as the object. The real content
+#   ("the deficit is set to hit $368bn") sits in a clausal complement (`ccomp`), which our rules skip.
+# - **Rows 2 and 19**: the subject is *it*. Knowing that *it* = Virgin Radio needs coreference resolution.
+# - **Row 17, *(… Doom, blast, the Golden Joystick awards)***: an appositive ("the ceremony, the Golden
+#   Joystick awards") is misread as a second object, and the chunk drops the "3" of "Doom 3".
+# - **Rows 9, 12, 13 give nothing**: the action is inside an infinitive or reported-speech clause
+#   ("hope *to sign* Juninho", "says … has made him determined"), where the verb has no direct `nsubj`.
+#
+# Triples are only as good as the parse plus the rules. Real open-information-extraction systems add
+# rules for clauses, coordination and coreference.
 
 # %% [markdown]
 # ### Two dependency trees
@@ -168,8 +177,9 @@ overlap = np.mean([len(set(np.argsort(-sim_tfidf[i])[:3]) & set(np.argsort(-sim_
 print("category precision@3:", p3, f"| average top-3 overlap between the methods: {overlap:.1%}")
 
 # %% [markdown]
-# On whole articles both methods do well: a full article repeats its topic words many times, which is
-# exactly what TF-IDF needs. The difference shows up on **short queries that paraphrase**.
+# On whole articles both methods do well (MiniLM somewhat better): a full article repeats its topic
+# words many times, which is exactly what TF-IDF needs. They still agree on fewer than half of the
+# neighbours, so they measure "similar" differently. The difference shows up on **short queries that paraphrase**.
 
 # %% [markdown]
 # ### Short free-text queries: where meaning beats word overlap

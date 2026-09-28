@@ -1,0 +1,292 @@
+{
+  "name": "semantic_search",
+  "fast_mode": false,
+  "svo": {
+    "sentences": 20,
+    "with_triple": 13,
+    "triples": 19,
+    "examples": [
+      {
+        "category": "business",
+        "sentence": "A strike on the Buenos Aires underground has caused traffic chaos and large queues at bus stops in the Argentine capital.",
+        "triples": [
+          [
+            "A strike",
+            "cause",
+            "traffic chaos"
+          ]
+        ]
+      },
+      {
+        "category": "business",
+        "sentence": "Indonesia's government has confirmed it is considering raising fuel prices by as much as 30%.",
+        "triples": []
+      },
+      {
+        "category": "business",
+        "sentence": "Scandal-hit jet fuel supplier China Aviation Oil has offered to repay its creditors $220m (\u00a3117m) of the $550m it lost on trading in oil futures.",
+        "triples": [
+          [
+            "it",
+            "lose on",
+            "trading"
+          ]
+        ]
+      },
+      {
+        "category": "business",
+        "sentence": "The US budget deficit is set to hit a worse-than-expected $368bn (\u00a3197bn) this year, officials said on Tuesday.",
+        "triples": [
+          [
+            "officials",
+            "say on",
+            "Tuesday"
+          ]
+        ]
+      },
+      {
+        "category": "entertainment",
+        "sentence": "Novelist Andrea Levy is favourite to win the main Whitbread Prize book of the year award, after winning novel of the year with her book Small Island.",
+        "triples": []
+      },
+      {
+        "category": "entertainment",
+        "sentence": "The reggae industry is to refuse to release or stage concerts featuring homophobic songs under a global deal struck with gay rights groups.",
+        "triples": []
+      },
+      {
+        "category": "entertainment",
+        "sentence": "The parents of a 13-year-old girl are suing US supermarket giant Wal-Mart over a CD by rock group Evanescence that contains swear words.",
+        "triples": [
+          [
+            "The parents",
+            "sue",
+            "Mart"
+          ],
+          [
+            "The parents",
+            "sue over",
+            "a CD"
+          ],
+          [
+            "The parents",
+            "sue by",
+            "rock group"
+          ],
+          [
+            "that",
+            "contain",
+            "swear words"
+          ]
+        ]
+      },
+      {
+        "category": "entertainment",
+        "sentence": "The new big-screen version of The Magic Roundabout, released in the UK on Friday, is the latest attempt to turn children's television into box-office gold.",
+        "triples": [
+          [
+            "The new big-screen version",
+            "be",
+            "the latest attempt"
+          ]
+        ]
+      },
+      {
+        "category": "politics",
+        "sentence": "Michael Howard has backed stem cell research, saying it is important people are not frightened of the future.",
+        "triples": [
+          [
+            "Michael Howard",
+            "back",
+            "stem cell research"
+          ]
+        ]
+      },
+      {
+        "category": "politics",
+        "sentence": "Prince Harry should personally make clear how sorry he is about wearing a Nazi uniform to a friend's fancy dress party, says Tory leader Michael Howard.",
+        "triples": []
+      },
+      {
+        "category": "politics",
+        "sentence": "Schools must improve the quality of citizenship lessons - or social cohesion and democracy will suffer, says the education watchdog.",
+        "triples": [
+          [
+            "Schools",
+            "improve",
+            "the quality"
+          ]
+        ]
+      },
+      {
+        "category": "politics",
+        "sentence": "New rules on marriage for foreign nationals living in the UK are coming into force.",
+        "triples": [
+          [
+            "New rules",
+            "come into",
+            "force"
+          ]
+        ]
+      },
+      {
+        "category": "sport",
+        "sentence": "Mexican outfit Red Sharks Veracruz hope to sign Juninho if the Brazilian decides to leave Celtic frustrated at his lack of first-team action.",
+        "triples": []
+      },
+      {
+        "category": "sport",
+        "sentence": "Mark Lewis-Francis says his Olympic success has made him determined to bag World Championship 100m gold in 2005.",
+        "triples": []
+      },
+      {
+        "category": "sport",
+        "sentence": "Two moments of magic from Brian O'Driscoll guided Ireland to a workmanlike victory against Italy.",
+        "triples": [
+          [
+            "Two moments",
+            "guide",
+            "Ireland"
+          ],
+          [
+            "Two moments",
+            "guide to",
+            "a workmanlike victory"
+          ]
+        ]
+      },
+      {
+        "category": "sport",
+        "sentence": "Four British athletes have been pre-selected to compete at the World Cross Country Championships in March after impressive starts to the season.",
+        "triples": []
+      },
+      {
+        "category": "tech",
+        "sentence": "Pocket-sized devices that let people carry around video and images are set to have a big year in 2005, according to industry experts.",
+        "triples": [
+          [
+            "people",
+            "carry",
+            "video"
+          ]
+        ]
+      },
+      {
+        "category": "tech",
+        "sentence": "Sci-fi shooter Doom 3 has blasted away the competition at a major games ceremony, the Golden Joystick awards.",
+        "triples": [
+          [
+            "Sci-fi shooter Doom",
+            "blast",
+            "the competition"
+          ],
+          [
+            "Sci-fi shooter Doom",
+            "blast",
+            "the Golden Joystick awards"
+          ],
+          [
+            "Sci-fi shooter Doom",
+            "blast at",
+            "a major games ceremony"
+          ]
+        ]
+      },
+      {
+        "category": "tech",
+        "sentence": "Security firms are warning about a Windows virus disguising itself as an electronic Christmas card.",
+        "triples": [
+          [
+            "Security firms",
+            "warn about",
+            "a Windows virus"
+          ]
+        ]
+      },
+      {
+        "category": "tech",
+        "sentence": "UK broadcaster Virgin Radio says it will become the first station in the world to offer radio via 3G mobiles.",
+        "triples": [
+          [
+            "it",
+            "become",
+            "the first station"
+          ]
+        ]
+      }
+    ]
+  },
+  "retrieval": {
+    "n_docs": 2089,
+    "category_precision_at_3": {
+      "TF-IDF": 0.907,
+      "MiniLM": 0.9381
+    },
+    "top3_overlap": 0.4385,
+    "tfidf_build_s": 11.1,
+    "minilm_encode_s": 9.5,
+    "device": "mps"
+  },
+  "free_queries": [
+    {
+      "query": "carmaker cuts jobs",
+      "method": "TF-IDF",
+      "top result": "[politics] Whitehall cuts 'ahead of target'",
+      "cosine": 0.274
+    },
+    {
+      "query": "carmaker cuts jobs",
+      "method": "MiniLM",
+      "top result": "[business] GM, Ford cut output as sales fall",
+      "cosine": 0.476
+    },
+    {
+      "query": "handset makers see sales jump",
+      "method": "TF-IDF",
+      "top result": "[business] US retail sales surge in December",
+      "cosine": 0.226
+    },
+    {
+      "query": "handset makers see sales jump",
+      "method": "MiniLM",
+      "top result": "[tech] Looks and music to drive mobiles",
+      "cosine": 0.521
+    },
+    {
+      "query": "keeping children safe online",
+      "method": "TF-IDF",
+      "top result": "[politics] Asylum children to face returns",
+      "cosine": 0.343
+    },
+    {
+      "query": "keeping children safe online",
+      "method": "MiniLM",
+      "top result": "[tech] UK gets official virus alert site",
+      "cosine": 0.405
+    },
+    {
+      "query": "broadband connection speeds",
+      "method": "TF-IDF",
+      "top result": "[tech] BT boosts its broadband packages",
+      "cosine": 0.537
+    },
+    {
+      "query": "broadband connection speeds",
+      "method": "MiniLM",
+      "top result": "[tech] BT boosts its broadband packages",
+      "cosine": 0.662
+    },
+    {
+      "query": "physician shortage in hospitals",
+      "method": "TF-IDF",
+      "top result": "[politics] Crisis 'ahead in social sciences'",
+      "cosine": 0.315
+    },
+    {
+      "query": "physician shortage in hospitals",
+      "method": "MiniLM",
+      "top result": "[politics] Hospital suspends 'no Welsh' plan",
+      "cosine": 0.385
+    }
+  ]
+}
