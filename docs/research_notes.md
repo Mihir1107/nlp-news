@@ -151,3 +151,17 @@ Note: the English stopword list now has **198** words (older tutorials say 179).
 ## 7. Decisions (approved at the Phase 0 checkpoint: "do what you think is best")
 1. BBC source is `gopalkalpande/bbc-news-summary`, deduplicated to 2,089 articles. SetFit is not used.
 2. `ag_val` (2,000 rows) is kept, only for monitoring training in nb06 and nb07.
+
+## 8. Found during Phase 1
+- **TweetEval escapes.** 11.2% of train tweets contain literal escape text (`it’s`), and emoji
+  are stored as escaped UTF-16 surrogate pairs. `repair_tweet_text()` decodes them (original kept in `text_raw`).
+- **TweetEval train has zero emoji; 6.53% of test tweets have emoji.** A model cannot learn emoji
+  features from train. Mapping emoji to words (😂 → "laugh") is the only way they can help (nb11 ablation).
+- **More AG entities.** Bare `hellip;`, `nbsp;`, `rsquo;`, `mdash;`, `lt;`, `gt;` (about 70 rows) are now
+  repaired. Fixing them changed the dedup pool, so the seeded 30k train sample changed. nb01 and nb02 were
+  re-run afterwards, and all saved numbers are from the final data.
+- **pandas 3 + pyarrow strings.** `.str.contains()` uses the RE2 engine, which has **no backreferences**
+  (`(\w)\1` fails). Use Python `re` through `.map()` for those patterns.
+- **WordNet lemmatizer quirk.** It strips a final "s" whenever the rest is a dictionary word: `us→u`,
+  `has→ha`, `boss→bos`. `src/preprocess.py` guards against this (unit-tested).
+- **`NEWSMIND_FAST=1`** writes results to `results/fast/` (gitignored), so it never replaces real numbers.
