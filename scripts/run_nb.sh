@@ -4,6 +4,7 @@
 set -euo pipefail
 src="$1"; timeout="${2:-1200}"
 nb="${src%.py}.ipynb"
+export PYTHONHASHSEED=0   # gensim seeds word vectors with hash(); fix it for repeatable runs
 .venv/bin/jupytext --quiet --to ipynb "$src" -o "$nb"
 start=$(date +%s)
 .venv/bin/jupyter nbconvert --to notebook --execute --inplace \
