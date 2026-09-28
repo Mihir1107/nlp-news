@@ -76,6 +76,13 @@ editors: their output is marked on the copy with a tinted wash or a blue-pencil 
 | Ask the archive | `POST /ask` | a Q&A interview; answer as a pull quote and marked inside its quoted source passage; confidence bar with the tuned "I don't know" threshold |
 | The numbers | `GET /results` | dot plot of classifier accuracy, bars for ROUGE, QA and tweet results, all read from `results/*.json` |
 
+Themes: a day edition (light) and a night edition (dark), switched by the street lamp in the masthead
+(`components/Lamp.jsx`). The theme is a `data-theme` attribute on `<html>`, set before first paint by an inline
+script in `index.html` (last choice from `localStorage`, else the OS setting); all colours are CSS variables
+redefined for `[data-theme='dark']`. The switch uses the View Transitions API, with a circle expanding from the
+lamp (`edition-spread`) or shrinking back into it (`edition-withdraw`); without that API, or with reduced motion,
+the theme changes instantly.
+
 Build: `esbuild` bundles `src/main.jsx` (JSX, CSS, fonts) into `dist/` (`frontend/build.mjs`). Type: Bodoni Moda
 for display, Newsreader for text; both are bundled, so the app needs no internet. Motion respects the operating system's "reduce motion" setting.
 

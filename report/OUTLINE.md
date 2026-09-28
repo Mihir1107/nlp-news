@@ -56,7 +56,7 @@ notebooks' stored outputs.
 - 4.12 Module V, REST API: endpoints, validation, truncation, lifespan loading, tests (api/, tests/test_api.py).
 - 4.13 Web app: the five views and what each shows, how it calls the API, design choices (an editorial layout where the models mark up the copy, as the
   way to show model output on the text); screenshots `figures/web_topic.png`, `web_summary_textrank.png`,
-  `web_entities.png`, `web_ask.png`, `web_results.png`.
+  `web_entities.png`, `web_ask.png`, `web_results.png`, and `web_night.png` (the night edition).
 
 ## 5. Results
 - Table 1 (AG News) + `figures/accuracy_vs_cost.png` + `figures/confusion_tfidf_best.png` + bootstrap table.

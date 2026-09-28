@@ -226,3 +226,15 @@ Note: the English stopword list now has **198** words (older tutorials say 179).
 - Type: Bodoni Moda (display, variable with optical sizes) and Newsreader (text); the sans-serif was removed.
   `@fontsource-variable/bodoni-moda` 5.3.0 was downloaded as a tarball (SHA-1 matched the registry).
 - Checked in Chromium at 1360×900 and 390×844 (no horizontal overflow); screenshots in `report/figures/web_*.png`.
+
+## 13. Typography pass and night edition
+- Newsreader switched to the variable build (`@fontsource-variable/newsreader` 5.3.0, SHA-1 matched), which has an
+  optical-size axis; `font-optical-sizing: auto` everywhere.
+- Checked in the browser: Newsreader has **no oldstyle figures** (the `onum` setting rendered identical to lining)
+  and its small caps are synthesized, so neither is used. Tabular figures work and are used for compared numbers.
+- Large Bodoni is set at optical size 24, chosen by rendering the nameplate at 11/24/40/60: 40+ loses the
+  hairlines of N and M, 11 is too heavy. Bodoni is not used below 28 px. It has no non-breaking hyphen glyph, so
+  "hand-written" in a heading is kept together with `white-space: nowrap` instead.
+- Hyphenation only in narrow result columns (`hyphenate-limit-chars: 8 4 4`), never inside marks or quotations.
+- Night edition verified at 1360×900 and 390×844: no horizontal overflow (the lamp's glow layer is viewport-wide and
+  clipped), both View Transition animations run (`edition-spread`, `edition-withdraw`), the choice persists.

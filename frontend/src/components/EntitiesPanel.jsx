@@ -47,7 +47,7 @@ export default function EntitiesPanel({ samples, facts }) {
         <AnimatePresence mode="wait">
           {!out ? (
             <motion.p key="empty" className="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              spaCy's small English model marks every person, organisation, place, date and figure it finds.
+              spaCy’s small English model marks every person, organisation, place, date and figure it finds.
               {facts && ` When we checked ${facts.ner_checked} of its entities in BBC text by hand, ${Math.round(facts.ner_precision * 100)}% were exactly right, so expect some mistakes.`}
             </motion.p>
           ) : (

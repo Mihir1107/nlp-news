@@ -8,7 +8,7 @@ export async function api(path, body) {
       body: JSON.stringify(body),
     })
   } catch {
-    throw new Error("Can't reach the API. Start it with `uvicorn api.app:app`, then reload this page.")
+    throw new Error("Can’t reach the API. Start it with `uvicorn api.app:app`, then reload this page.")
   }
   const data = await res.json().catch(() => ({}))
   if (!res.ok) {

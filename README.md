@@ -63,8 +63,14 @@ Open **http://127.0.0.1:8000/**. If port 8000 is taken by another program, add `
 | Ask the archive | a Q&A interview with NewsBot: the answer set as a pull quote, the source passage quoted with the answer marked, the confidence threshold on the bar; suggested questions in the side column |
 | The numbers | the evaluation figures, read live from `results/*.json` |
 
+**Day and night editions.** The street lamp beside the nameplate is the theme switch: light it for the night
+edition (dark theme) and the new edition spreads out from the lamp while the gas mantle flickers into life; put
+it out and the night is drawn back into it. The page starts from your operating system's setting and remembers
+your choice.
+
 The app is React 19 + Framer Motion, bundled by esbuild (`frontend/build.mjs`) into `frontend/dist/`, which
-FastAPI serves. Type is Bodoni Moda (display) and Newsreader (text); both are bundled, so it works offline. Motion follows the
+FastAPI serves. Type is Bodoni Moda for display and Newsreader for text, both variable fonts with optical sizes,
+bundled so the app works offline. Motion follows the
 operating system's "reduce motion" setting. While editing the frontend, `npm run watch` rebuilds on every save.
 Screenshots: `report/figures/web_*.png`.
 

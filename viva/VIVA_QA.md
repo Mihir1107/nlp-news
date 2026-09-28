@@ -302,3 +302,16 @@ gives each wrapped line its own stroke. With the OS "reduce motion" setting on, 
 **60. Are the numbers on the results page typed into the frontend?**
 No. `GET /results` reads `results/*.json` on every request (`api/app.py:results`), including the few numbers
 quoted in the explanatory text (NER precision, threshold, sample sizes).
+
+**61. How do the day and night editions work?**
+Every colour is a CSS variable in `:root`, redefined under `[data-theme='dark']`, so switching themes is one
+attribute on `<html>`. An inline script in `index.html` sets it before the first paint (the saved choice, else the
+OS setting) so the page never flashes the wrong theme. The lamp (`components/Lamp.jsx`) toggles it inside
+`document.startViewTransition`, and CSS animates a circle expanding from the lamp's position.
+
+**62. What typographic choices were made, and why?**
+Bodoni Moda (a high-contrast didone) only at 28 px and above, because its hairlines vanish when small; at large
+sizes it is set at optical size 24 so the hairlines of N and M stay visible (compared in the browser against 11,
+40 and 60). Newsreader, whose optical-size axis adapts letterforms from caption to deck size, is used for all
+text. Sizes follow one 1.25 modular scale; figures that are compared are tabular; lines are kept to about
+66 characters; quotations are never hyphenated.

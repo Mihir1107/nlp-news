@@ -4,11 +4,8 @@ import { MotionConfig } from 'framer-motion'
 // Fonts are bundled into the build, so the app works without internet during a demo.
 import '@fontsource-variable/bodoni-moda/opsz.css'         // display: nameplate, headlines, figures
 import '@fontsource-variable/bodoni-moda/opsz-italic.css'
-import '@fontsource/newsreader/400.css'                      // text and interface
-import '@fontsource/newsreader/400-italic.css'
-import '@fontsource/newsreader/500.css'
-import '@fontsource/newsreader/600.css'
-import '@fontsource/newsreader/600-italic.css'
+import '@fontsource-variable/newsreader/opsz.css'          // text and interface; its optical-size axis
+import '@fontsource-variable/newsreader/opsz-italic.css'   // gives captions sturdier letters than headlines
 import './styles.css'
 import App from './App.jsx'
 

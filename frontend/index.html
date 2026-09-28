@@ -2,6 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Choose the edition before the page paints (no flash of the wrong theme):
+      // the reader's last choice, otherwise the operating system's light/dark setting.
+      try {
+        var t = localStorage.getItem('newsmind-theme')
+        if (t !== 'dark' && t !== 'light') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        document.documentElement.dataset.theme = t
+      } catch (e) { document.documentElement.dataset.theme = 'light' }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="NewsMind: six language models read the news and mark up the copy like an editor." />
     <title>NewsMind</title>

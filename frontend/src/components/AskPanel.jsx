@@ -44,7 +44,7 @@ export default function AskPanel({ samples, facts }) {
           <p className="empty standfirst">
             Put a question to the archive of {facts ? facts.n_articles.toLocaleString('en') : ''} BBC stories from
             2004–05. NewsBot finds the three closest passages, reads them with a question-answering model, and
-            says "I don't know" when it is not sure enough. A few commands, such as "summarize article 1744",
+            says “I don’t know” when it is not sure enough. A few commands, such as “summarize article 1744”,
             are handled by simple rules instead.
           </p>
         )}
@@ -110,11 +110,11 @@ function Answer({ m, threshold }) {
               <Meter value={m.confidence} height={3} color={unsure ? 'var(--muted)' : 'var(--pencil)'} delay={0.1} />
               {threshold !== undefined && (
                 <span className="threshold" style={{ left: `${threshold * 100}%` }}
-                      title={`Below ${Math.round(threshold * 100)}% NewsBot says it doesn't know`} />
+                      title={`Below ${Math.round(threshold * 100)}% NewsBot says it doesn’t know`} />
               )}
             </div>
           </div>
-          {unsure && <p className="note">Its best guess was "{m.best_guess}", which falls below the threshold.</p>}
+          {unsure && <p className="note">Its best guess was “{m.best_guess}”, which falls below the threshold.</p>}
           <button type="button" className="link source-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>
             {open ? 'Hide the source passage' : 'Show the source passage'}
           </button>

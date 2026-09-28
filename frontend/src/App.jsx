@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { motion } from 'framer-motion'
 import { api } from './api.js'
+import Lamp from './components/Lamp.jsx'
 import ClassifyPanel from './components/ClassifyPanel.jsx'
 import SummarizePanel from './components/SummarizePanel.jsx'
 import EntitiesPanel from './components/EntitiesPanel.jsx'
@@ -17,8 +19,13 @@ const SECTIONS = [
 ]
 const EASE = [0.65, 0, 0.35, 1]
 
+// The theme is decided before React starts (inline script in index.html), so read it from <html>.
+const initialTheme = () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light')
+
 export default function App() {
   const [tab, setTab] = useState('topic')
+  const [theme, setTheme] = useState(initialTheme)
+  const lamp = useRef(null)
   const [health, setHealth] = useState(null)     // null = checking, false = unreachable
   const [samples, setSamples] = useState(null)
   const [results, setResults] = useState(null)
@@ -29,6 +36,23 @@ export default function App() {
     api('/samples').then(setSamples).catch(() => {})
     api('/results').then(setResults).catch(() => {})
   }, [])
+
+  // Light or put out the lamp. The new edition spreads out from the lamp (a View Transition whose
+  // circle starts at the lantern); browsers without View Transitions, or with reduced motion, switch at once.
+  function toggleTheme() {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    const r = lamp.current.getBoundingClientRect()
+    const root = document.documentElement
+    root.style.setProperty('--vt-x', `${r.left + r.width / 2}px`)
+    root.style.setProperty('--vt-y', `${r.top + r.height * 0.22}px`)
+    const apply = () => {
+      root.dataset.theme = next
+      flushSync(() => setTheme(next))  // render the lit/unlit lamp inside the transition snapshot
+    }
+    try { localStorage.setItem('newsmind-theme', next) } catch { /* private mode: not remembered */ }
+    if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) apply()
+    else document.startViewTransition(apply)
+  }
 
   // Arrow keys move between sections (standard tablist behaviour).
   function onTabKey(e) {
@@ -51,8 +75,12 @@ export default function App() {
 
   return (
     <div className="page">
+      {/* At night the lamp throws a warm pool of light over the masthead. */}
+      {theme === 'dark' && <motion.div className="lamplight" aria-hidden="true"
+                                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.2 }} />}
       {/* The one orchestrated moment: the double rule is drawn across, then the nameplate settles. */}
       <header className="masthead">
+        <Lamp ref={lamp} lit={theme === 'dark'} onToggle={toggleTheme} />
         <div className="folio">
           <span>An NLP laboratory, Semester VII</span>
           <Status health={health} />

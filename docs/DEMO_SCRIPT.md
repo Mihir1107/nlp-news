@@ -45,6 +45,8 @@ that it answers `{"status":"ok", ...}`.
    - *summarize article 1744* → labelled **rule-based**: a regular expression, not the model.
    - *Who won the 2018 FIFA World Cup?* → "I don't know"; the red tick on the confidence bar is the tuned threshold.
 5. Optional: type only spaces in the Topic box and submit → the API's 422 message appears under the button.
+6. Optional, as a closing flourish: click the street lamp beside the nameplate. The night edition spreads out
+   from the lamp; click again to put it out. (If the room is dark, start in the night edition.)
 
 ## If something breaks
 

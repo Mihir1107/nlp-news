@@ -17,7 +17,7 @@ export default function ResultsPanel({ results }) {
     <div className="results">
       <p className="standfirst wide">
         How well each model did on held-out data it never saw in training. Every figure on this page is read
-        from the project's results files, written by the twelve notebooks.
+        from the project’s results files, written by the twelve notebooks.
       </p>
       <section className="figure wide">
         <h2>Topic classification on {results.facts.ag_n_test.toLocaleString('en')} AG News test stories</h2>
@@ -51,7 +51,7 @@ export default function ResultsPanel({ results }) {
       </section>
 
       <section className="figure">
-        <h2>NewsBot on {results.qa.n_answerable} hand-written questions</h2>
+        <h2>NewsBot on {results.qa.n_answerable} <span className="nowrap">hand-written</span> questions</h2>
         <p className="caption">Share of questions where the right article was retrieved, and how well the answer matched.</p>
         <Bars rows={[
           ['Right article in top 3', results.qa.retrieval_hit_at_3],
@@ -63,7 +63,7 @@ export default function ResultsPanel({ results }) {
 
       <section className="figure">
         <h2>Tweet sentiment on {results.facts.tweets_n_test.toLocaleString('en')} test tweets</h2>
-        <p className="caption">Macro-recall, the benchmark's official score. RoBERTa was trained on tweets by the benchmark's authors, so it is a reference ceiling, not a fair rival.</p>
+        <p className="caption">Macro-recall, the benchmark’s official score. RoBERTa was trained on tweets by the benchmark’s authors, so it is a reference ceiling, not a fair rival.</p>
         <Bars rows={results.tweets.map((r) => [r.model.replace(' (reference, not fair)', ' (reference)'), r['macro-recall'], r.model.includes('reference')])} />
       </section>
     </div>
