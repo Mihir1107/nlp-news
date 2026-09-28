@@ -94,8 +94,8 @@ class NewsBot:
         known = span["confidence"] >= self.threshold
         return {"intent": "question", "answer": span["answer"] if known else "I don't know.",
                 "best_guess": span["answer"], "confidence": round(span["confidence"], 4),
-                "article_id": src["article_id"], "category": src["category"], "title": src["title"],
-                "retrieved_article_ids": [p["article_id"] for p in passages]}
+                "article_id": int(src["article_id"]), "category": src["category"], "title": src["title"],
+                "retrieved_article_ids": [int(p["article_id"]) for p in passages]}
 
     # ---- Rule-based intent router (regular expressions, no learning) ----
     def chat(self, message: str) -> dict:
