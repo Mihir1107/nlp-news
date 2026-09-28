@@ -184,11 +184,15 @@ REVIEW = {
     72: ("repetition", "\"Green Day, the Black Eyed Peas and the Green Day\": a name duplicated"),
 }
 ARTEFACT = {22, 29, 31, 32, 36, 41, 43, 48, 64, 68, 69, 89}  # checked: supported by the article
-assert set(REVIEW) | ARTEFACT == {i for i, _ in flagged}, "outputs changed: review the flags again"
-for i, (kind, why) in REVIEW.items():
-    print(f"[{i}] {kind.upper()}: {why}\n     summary: {systems['DistilBART'][i]}\n")
-print(f"{len(flagged)} flagged -> {sum(k != 'repetition' for k, _ in REVIEW.values())} real content "
-      f"errors, 1 repetition, {len(ARTEFACT)} harmless artefacts")
+if FAST:  # the review refers to the full 100-article run
+    REVIEW, ARTEFACT = {}, set()
+    print("FAST mode: hand review skipped")
+else:
+    assert set(REVIEW) | ARTEFACT == {i for i, _ in flagged}, "outputs changed: review the flags again"
+    for i, (kind, why) in REVIEW.items():
+        print(f"[{i}] {kind.upper()}: {why}\n     summary: {systems['DistilBART'][i]}\n")
+    print(f"{len(flagged)} flagged -> {sum(k != 'repetition' for k, _ in REVIEW.values())} real content "
+          f"errors, 1 repetition, {len(ARTEFACT)} harmless artefacts")
 
 # %% [markdown]
 # Two real errors in 100 summaries is a low rate, but look at their *kind*. The currency merge changes
